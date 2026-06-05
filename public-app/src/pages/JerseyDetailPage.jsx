@@ -6,7 +6,7 @@ import { formatCurrency } from '../utils/currency';
 import { normalizeSizes, defaultJerseySizes } from '../utils/sizes';
 import { useCart } from '../context/CartContext';
 import SizeChartModal from '../components/SizeChartModal';
-import { ArrowLeft, Check, Truck, ShieldCheck, MessageCircle, ShoppingBag, Ruler } from 'lucide-react';
+import { ArrowLeft, Check, Truck, ShieldCheck, MessageCircle, ShoppingBag, Ruler, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function JerseyDetailPage() {
@@ -142,12 +142,32 @@ export default function JerseyDetailPage() {
             </div>
 
             {/* Main Image */}
-            <div className="relative flex-grow bg-gray-50 rounded-3xl overflow-hidden aspect-[4/5] border border-gray-100">
+            <div className="relative flex-grow bg-gray-50 rounded-3xl overflow-hidden aspect-[4/5] border border-gray-100 group">
               <img 
                 src={images[activeImage]} 
                 alt={jersey.name} 
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-center transition-all duration-500 ease-in-out"
               />
+              {images.length > 1 && (
+                <>
+                  <button 
+                    type="button"
+                    onClick={() => setActiveImage((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2.5 rounded-full shadow-md hover:scale-110 active:scale-95 transition-all z-10 duration-200"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setActiveImage((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2.5 rounded-full shadow-md hover:scale-110 active:scale-95 transition-all z-10 duration-200"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
               {jersey.version_type && (
                 <div className="absolute top-6 left-6">
                   <span className="px-4 py-1.5 text-sm font-bold bg-white/90 backdrop-blur-sm text-gray-900 rounded-full shadow-md uppercase tracking-wider">

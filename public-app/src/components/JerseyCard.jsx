@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, ShoppingBag } from 'lucide-react';
+import { Eye, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { getJerseyImages } from '../utils/image';
 import { formatCurrency } from '../utils/currency';
@@ -40,6 +40,34 @@ export default function JerseyCard({ jersey }) {
               }`}
             />
           ))}
+          {images.length > 1 && (
+            <>
+              <button 
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+                }}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-1.5 rounded-full shadow hover:scale-110 active:scale-95 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button 
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-1.5 rounded-full shadow hover:scale-110 active:scale-95 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
           <div className="absolute top-2 right-2 flex flex-col space-y-1 z-10">
             {jersey.version && (
               <span className="bg-yellow-400 text-yellow-900 text-xs font-semibold px-2 py-1 rounded-full">
