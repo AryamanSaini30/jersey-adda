@@ -61,10 +61,10 @@ const CartDrawer = () => {
             <span>Subtotal</span>
             <span>{formatCurrency(cartTotal)}</span>
           </div>
-          <Link to="/cart" onClick={toggleCart} className="block text-center w-full bg-blue-600 text-white py-3 rounded-md mt-4 hover:bg-blue-700">
+          <Link to="/cart" onClick={toggleCart} className="block text-center w-full btn-secondary mt-4 py-3">
             View Cart
           </Link>
-          <Link to="/checkout" onClick={toggleCart} className="block text-center w-full bg-green-600 text-white py-3 rounded-md mt-2 hover:bg-green-700">
+          <Link to="/checkout" onClick={toggleCart} className="block text-center w-full btn-primary mt-2 py-3">
             Checkout
           </Link>
         </div>

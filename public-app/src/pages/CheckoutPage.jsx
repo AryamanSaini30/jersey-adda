@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../utils/currency';
 import { http } from '../api/http';
 import toast from 'react-hot-toast';
+import { ArrowLeft, CheckCircle, Search, User, MapPin, ClipboardList } from 'lucide-react';
 
 const CheckoutPage = () => {
   const { cart, cartTotal, clearCart } = useCart();
@@ -21,16 +22,31 @@ const CheckoutPage = () => {
   });
 
   const handlePhoneSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (!phone.trim()) {
+      toast.error('Please enter a phone number first.');
+      return;
+    }
+    
     try {
       const response = await http.get(`/customers/phone/${phone}`);
       setCustomer(response.data);
       setFormData(response.data);
       setIsNewCustomer(false);
+      toast.success('Profile found and loaded!');
     } catch (error) {
       if (error.message === 'Customer not found') {
         setIsNewCustomer(true);
         setCustomer(null);
+        setFormData({
+          name: '',
+          address_line_1: '',
+          address_line_2: '',
+          city: '',
+          state: '',
+          postal_code: '',
+        });
+        toast.success('No existing profile. Fill out details to create one!');
       } else {
         toast.error('An error occurred while fetching customer data.');
       }
@@ -46,7 +62,7 @@ const CheckoutPage = () => {
     try {
       const response = await http.put(`/customers/${customer.id}`, formData);
       setCustomer(response.data);
-      toast.success('Customer profile updated successfully!');
+      toast.success('Profile updated successfully!');
     } catch (error) {
       toast.error('Failed to update customer profile.');
     }
@@ -68,7 +84,12 @@ const CheckoutPage = () => {
     }
 
     if (!finalCustomer) {
-      toast.error('Please provide customer details.');
+      toast.error('Please verify or enter customer details first.');
+      return;
+    }
+
+    if (!formData.name.trim() || !formData.address_line_1.trim() || !formData.city.trim() || !formData.state.trim() || !formData.postal_code.trim()) {
+      toast.error('Please fill in all required fields.');
       return;
     }
 
@@ -109,81 +130,203 @@ const CheckoutPage = () => {
 
   if (cart.length === 0) {
     return (
-      <div className="container mx-auto text-center py-20">
-        <h1 className="text-2xl">Your cart is empty.</h1>
+      <div className="max-w-xl mx-auto text-center py-20 px-6 bg-white border border-gray-100 rounded-3xl p-8 shadow-sm mt-12">
+        <h1 className="text-2xl font-bold mb-4">Your cart is empty.</h1>
+        <p className="text-gray-500 mb-8">Please add items to your cart before proceeding to checkout.</p>
+        <Link to="/jerseys" className="btn-primary inline-flex items-center gap-2">
+          <ArrowLeft className="w-4 h-4" /> Go to Catalog
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div>
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">1. Customer Information</h2>
-            <form onSubmit={handlePhoneSubmit} className="flex gap-4">
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Enter your phone number"
-                className="flex-grow p-2 border rounded-md"
-              />
-              <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-md">
-                Find
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-8">Checkout</h1>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* Left Side: Step 1 Information Form */}
+        <div className="lg:col-span-7 space-y-6">
+          
+          <div className="bg-white rounded-3xl border border-gray-100 p-6 sm:p-8 shadow-sm">
+            <div className="flex items-center gap-3 border-b border-gray-100 pb-4 mb-6">
+              <div className="w-8 h-8 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 shrink-0">
+                <User className="w-4 h-4" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900">1. Customer Verification</h2>
+            </div>
+            
+            <p className="text-sm text-gray-500 mb-6">
+              Enter your phone number to check if you have an existing profile or to initialize a new checkout profile.
+            </p>
+
+            <form onSubmit={handlePhoneSubmit} className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-grow">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                  <Search className="w-5 h-5" />
+                </div>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter phone number (e.g. +919876543210)"
+                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all"
+                />
+              </div>
+              <button 
+                type="submit" 
+                className="btn-primary px-8 py-3 rounded-full text-sm font-semibold shrink-0"
+              >
+                Find Profile
               </button>
             </form>
-          </div>
 
-          {(customer || isNewCustomer) && (
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">
-                {isNewCustomer ? 'Create New Profile' : 'Shipping Details'}
-              </h2>
-              <div className="grid grid-cols-1 gap-4">
-                <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Full Name" className="p-2 border rounded-md" />
-                <input type="text" name="address_line_1" value={formData.address_line_1} onChange={handleInputChange} placeholder="Address Line 1" className="p-2 border rounded-md" />
-                <input type="text" name="address_line_2" value={formData.address_line_2} onChange={handleInputChange} placeholder="Address Line 2" className="p-2 border rounded-md" />
-                <input type="text" name="city" value={formData.city} onChange={handleInputChange} placeholder="City" className="p-2 border rounded-md" />
-                <input type="text" name="state" value={formData.state} onChange={handleInputChange} placeholder="State" className="p-2 border rounded-md" />
-                <input type="text" name="postal_code" value={formData.postal_code} onChange={handleInputChange} placeholder="Postal Code" className="p-2 border rounded-md" />
+            {(customer || isNewCustomer) && (
+              <div className="mt-8 pt-8 border-t border-gray-100">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 shrink-0">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {isNewCustomer ? 'New Profile Details' : 'Shipping Details'}
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Full Name *</label>
+                    <input 
+                      type="text" 
+                      name="name" 
+                      value={formData.name} 
+                      onChange={handleInputChange} 
+                      placeholder="e.g. John Doe" 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-gray-900" 
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Address Line 1 *</label>
+                    <input 
+                      type="text" 
+                      name="address_line_1" 
+                      value={formData.address_line_1} 
+                      onChange={handleInputChange} 
+                      placeholder="Street name, house/flat number" 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-gray-900" 
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Address Line 2 (Optional)</label>
+                    <input 
+                      type="text" 
+                      name="address_line_2" 
+                      value={formData.address_line_2 || ''} 
+                      onChange={handleInputChange} 
+                      placeholder="Apartment, suite, unit, floor, etc." 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-gray-900" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">City *</label>
+                    <input 
+                      type="text" 
+                      name="city" 
+                      value={formData.city} 
+                      onChange={handleInputChange} 
+                      placeholder="City" 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-gray-900" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">State *</label>
+                    <input 
+                      type="text" 
+                      name="state" 
+                      value={formData.state} 
+                      onChange={handleInputChange} 
+                      placeholder="State" 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-gray-900" 
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Postal Code *</label>
+                    <input 
+                      type="text" 
+                      name="postal_code" 
+                      value={formData.postal_code} 
+                      onChange={handleInputChange} 
+                      placeholder="Postal Code" 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-all text-gray-900" 
+                    />
+                  </div>
+                </div>
+
+                {customer && !isNewCustomer && hasProfileChanges && (
+                  <button
+                    type="button"
+                    onClick={handleSaveProfile}
+                    className="mt-6 w-full btn-secondary py-3 text-sm font-semibold hover:-translate-y-0.5 transition-transform"
+                  >
+                    Save Profile Changes
+                  </button>
+                )}
               </div>
-              {customer && !isNewCustomer && hasProfileChanges && (
-                <button
-                  type="button"
-                  onClick={handleSaveProfile}
-                  className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors"
-                >
-                  Save Profile Changes
-                </button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">2. Order Summary</h2>
-          <div className="bg-gray-100 p-6 rounded-lg">
-            {cart.map(item => (
-              <div key={`${item.id}-${item.size}`} className="flex justify-between items-center mb-2">
-                <p>{item.name} (x{item.quantity})</p>
-                <p>{formatCurrency(item.price * item.quantity)}</p>
+        {/* Right Side: Step 2 Order Summary Panel */}
+        <div className="lg:col-span-5 bg-white rounded-3xl border border-gray-100 p-6 sm:p-8 shadow-sm lg:sticky lg:top-24">
+          <div className="flex items-center gap-3 border-b border-gray-100 pb-4 mb-6">
+            <div className="w-8 h-8 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 shrink-0">
+              <ClipboardList className="w-4 h-4" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">2. Order Summary</h2>
+          </div>
+
+          <div className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto pr-2 hide-scrollbar">
+            {cart.map((item) => (
+              <div key={`${item.id}-${item.size}`} className="flex justify-between items-center py-3 first:pt-0 last:pb-0">
+                <div>
+                  <p className="font-bold text-gray-800 text-sm leading-snug">{item.name}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Size: {item.size} • Qty: {item.quantity}</p>
+                </div>
+                <p className="font-extrabold text-gray-900 text-sm pl-4">{formatCurrency(item.price * item.quantity)}</p>
               </div>
             ))}
-            <div className="flex justify-between font-bold text-xl border-t pt-4 mt-4">
-              <p>Total</p>
-              <p>{formatCurrency(cartTotal)}</p>
-            </div>
-            <button
-              onClick={handlePlaceOrder}
-              className="w-full bg-green-600 text-white py-3 rounded-md mt-6 hover:bg-green-700"
-              disabled={!customer && !isNewCustomer}
-            >
-              Place Order & Send on WhatsApp
-            </button>
           </div>
+
+          <div className="border-t border-gray-100 pt-6 mt-6 space-y-4">
+            <div className="flex justify-between text-sm text-gray-500">
+              <span>Subtotal</span>
+              <span className="font-semibold text-gray-900">{formatCurrency(cartTotal)}</span>
+            </div>
+            <div className="flex justify-between text-sm text-gray-500">
+              <span>Delivery</span>
+              <span className="font-semibold text-brand-600 text-xs sm:text-sm">Will be specified on WhatsApp</span>
+            </div>
+            <div className="border-t border-gray-100 pt-4 mt-4 flex justify-between items-baseline">
+              <span className="text-base font-bold text-gray-900">Total Amount</span>
+              <span className="text-2xl font-black text-brand-700">{formatCurrency(cartTotal)}</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handlePlaceOrder}
+            className={`w-full btn-primary mt-8 py-4 text-base font-bold shadow-md shadow-brand-700/10 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 ${
+              (!customer && !isNewCustomer) ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            disabled={!customer && !isNewCustomer}
+          >
+            Place Order via WhatsApp
+          </button>
+          
+          <p className="text-center text-xs text-gray-400 mt-4 flex items-center justify-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5 text-green-500" /> Redirects to WhatsApp to finalize order.
+          </p>
         </div>
+
       </div>
     </div>
   );

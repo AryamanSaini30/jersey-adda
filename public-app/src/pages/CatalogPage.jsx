@@ -69,7 +69,7 @@ export default function CatalogPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-10">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8 mb-10">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Complete Catalog</h1>
         <p className="text-gray-500 mb-8 max-w-3xl text-lg">
           Browse our entire collection. Search by team, player, or browse through all available options to find your perfect match.

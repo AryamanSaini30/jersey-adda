@@ -3,7 +3,7 @@ import { Search, Filter } from 'lucide-react';
 
 export default function SearchFilters({ search, setSearch, team, setTeam, version, setVersion, sleeve, setSleeve, teams }) {
   return (
-    <section className="bg-white border-b border-gray-200 md:sticky md:top-20 z-40 shadow-sm">
+    <section className="bg-white border-b border-gray-200 lg:sticky lg:top-20 z-40 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           

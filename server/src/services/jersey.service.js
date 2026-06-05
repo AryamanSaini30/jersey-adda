@@ -91,8 +91,11 @@ async function createJersey(payload, files) {
       uploadedImages.push(await cloudinaryService.uploadImage(file));
     }
 
+    const rawSlug = payload.slug || generateSlug(payload.name, payload.team_name);
+    const slug = slugify(rawSlug, { lower: true, strict: true, trim: true });
+
     const jerseyPayload = {
-      slug: payload.slug || generateSlug(payload.name, payload.team_name),
+      slug,
       name: payload.name,
       team_name: payload.team_name,
       league_name: normalizeOptionalString(payload.league_name),
@@ -140,8 +143,11 @@ async function updateJersey(id, payload, files) {
       newlyUploadedImages.push(uploaded);
     }
 
+    const rawSlug = payload.slug || existingJersey.slug;
+    const slug = slugify(rawSlug, { lower: true, strict: true, trim: true });
+
     const jerseyPayload = {
-      slug: payload.slug || existingJersey.slug,
+      slug,
       name: payload.name ?? existingJersey.name,
       team_name: payload.team_name ?? existingJersey.team_name,
       league_name: payload.league_name === undefined ? existingJersey.league_name : normalizeOptionalString(payload.league_name),
