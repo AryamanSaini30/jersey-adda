@@ -59,6 +59,12 @@ const CheckoutPage = () => {
 
   const handleSaveProfile = async () => {
     if (!customer || isNewCustomer) return;
+
+    if (!formData.name?.trim() || !formData.address_line_1?.trim() || !formData.city?.trim() || !formData.state?.trim() || !formData.postal_code?.trim()) {
+      toast.error('Required fields are not filled.');
+      return;
+    }
+
     try {
       const response = await http.put(`/customers/${customer.id}`, formData);
       setCustomer(response.data);
@@ -69,6 +75,11 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
+    if (!formData.name?.trim() || !formData.address_line_1?.trim() || !formData.city?.trim() || !formData.state?.trim() || !formData.postal_code?.trim()) {
+      toast.error('Required fields are not filled.');
+      return;
+    }
+
     let finalCustomer = customer;
     if (isNewCustomer) {
       try {
@@ -81,15 +92,20 @@ const CheckoutPage = () => {
         toast.error('Failed to create customer profile.');
         return;
       }
+    } else if (hasProfileChanges) {
+      try {
+        const response = await http.put(`/customers/${customer.id}`, formData);
+        finalCustomer = response.data;
+        setCustomer(finalCustomer);
+        toast.success('Profile updated successfully!');
+      } catch (error) {
+        toast.error('Failed to update customer profile.');
+        return;
+      }
     }
 
     if (!finalCustomer) {
       toast.error('Please verify or enter customer details first.');
-      return;
-    }
-
-    if (!formData.name.trim() || !formData.address_line_1.trim() || !formData.city.trim() || !formData.state.trim() || !formData.postal_code.trim()) {
-      toast.error('Please fill in all required fields.');
       return;
     }
 
