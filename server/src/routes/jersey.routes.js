@@ -1,4 +1,7 @@
 const { Router } = require('express');
+const jwt = require('jsonwebtoken');
+const { env } = require('../config/env');
+const { ApiError } = require('../utils/apiError');
 const jerseyController = require('../controllers/jersey.controller');
 const { adminAuth } = require('../middleware/adminAuth');
 const { validate } = require('../middleware/validate');
@@ -48,6 +51,19 @@ router.delete(
   validate(jerseyIdParamsSchema, 'params'),
   jerseyController.deleteJersey
 );
+
+router.post('/admin/login', (req, res, next) => {
+  const { password } = req.body;
+  if (!password) {
+    return next(new ApiError(400, 'Password is required'));
+  }
+  if (password !== env.adminPassword) {
+    return next(new ApiError(401, 'Invalid admin password'));
+  }
+
+  const token = jwt.sign({ role: 'admin' }, env.jwtSecret, { expiresIn: '1d' });
+  res.json({ success: true, token });
+});
 
 router.post('/admin/verify', adminAuth, (req, res) => {
   res.json({ success: true });

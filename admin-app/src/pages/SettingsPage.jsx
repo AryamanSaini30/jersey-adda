@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { http } from '../api/http';
 import toast from 'react-hot-toast';
 
-const SettingsPage = ({ adminPassword }) => {
+const SettingsPage = ({ adminToken }) => {
   const navigate = useNavigate();
   const [settings, setSettings] = useState({ whatsapp_number: '' });
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,7 @@ const SettingsPage = ({ adminPassword }) => {
     try {
       await http.put('/settings', { whatsapp_number: num }, {
         headers: {
-          'x-admin-password': adminPassword || window.localStorage.getItem('jerseyAddaAdminPassword') || ''
+          'Authorization': `Bearer ${adminToken || window.localStorage.getItem('jerseyAddaAdminToken') || ''}`
         }
       });
       toast.success('Settings saved successfully!');

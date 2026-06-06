@@ -107,7 +107,7 @@ function buildQuery(filters) {
   return query ? `?${query}` : '';
 }
 
-export default function AdminDashboard({ adminPassword, onLogout, onOpenPublic }) {
+export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
   const [jerseys, setJerseys] = useState([]);
   const [selectedJerseyId, setSelectedJerseyId] = useState('');
   const [activeTab, setActiveTab] = useState('catalog');
@@ -181,7 +181,7 @@ export default function AdminDashboard({ adminPassword, onLogout, onOpenPublic }
       setError('');
 
       try {
-        const response = await listAdminJerseys(adminPassword, buildQuery(filters));
+        const response = await listAdminJerseys(adminToken, buildQuery(filters));
         if (!active) return;
 
         const items = response.data?.items || [];
@@ -200,7 +200,7 @@ export default function AdminDashboard({ adminPassword, onLogout, onOpenPublic }
     return () => {
       active = false;
     };
-  }, [adminPassword, filters]);
+  }, [adminToken, filters]);
 
   const resetForm = () => {
     setSelectedJerseyId('');
@@ -211,8 +211,8 @@ export default function AdminDashboard({ adminPassword, onLogout, onOpenPublic }
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!adminPassword) {
-      setError('Admin password is required');
+    if (!adminToken) {
+      setError('Admin token is required');
       return;
     }
 
@@ -229,11 +229,11 @@ export default function AdminDashboard({ adminPassword, onLogout, onOpenPublic }
       const payload = createFormData(form, files);
       const isNew = !selectedJersey;
       const response = selectedJersey
-        ? await updateAdminJersey(adminPassword, selectedJersey.id, payload)
-        : await createAdminJersey(adminPassword, payload);
+        ? await updateAdminJersey(adminToken, selectedJersey.id, payload)
+        : await createAdminJersey(adminToken, payload);
 
       setMessage(isNew ? 'Jersey created' : 'Jersey updated');
-      const updatedJerseys = await listAdminJerseys(adminPassword, buildQuery(filters));
+      const updatedJerseys = await listAdminJerseys(adminToken, buildQuery(filters));
       setJerseys(updatedJerseys.data?.items || []);
 
       if (response.data?.id) {
@@ -251,7 +251,7 @@ export default function AdminDashboard({ adminPassword, onLogout, onOpenPublic }
   };
 
   const handleDelete = async () => {
-    if (!selectedJersey || !adminPassword) return;
+    if (!selectedJersey || !adminToken) return;
 
     const confirmed = window.confirm(`Delete ${selectedJersey.name}?`);
     if (!confirmed) return;
@@ -261,8 +261,8 @@ export default function AdminDashboard({ adminPassword, onLogout, onOpenPublic }
     setMessage('');
 
     try {
-      await deleteAdminJersey(adminPassword, selectedJersey.id);
-      const updatedJerseys = await listAdminJerseys(adminPassword, buildQuery(filters));
+      await deleteAdminJersey(adminToken, selectedJersey.id);
+      const updatedJerseys = await listAdminJerseys(adminToken, buildQuery(filters));
       setJerseys(updatedJerseys.data?.items || []);
       resetForm();
       setMessage('Jersey deleted');

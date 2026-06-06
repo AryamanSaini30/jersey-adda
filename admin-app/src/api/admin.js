@@ -1,37 +1,41 @@
 import { request, requestJson } from './http';
 
-function buildAdminHeaders(adminPassword) {
+function buildAdminHeaders(adminToken) {
   return {
-    'x-admin-password': adminPassword
+    'Authorization': `Bearer ${adminToken}`
   };
 }
 
-export async function listAdminJerseys(adminPassword, params = '') {
+export async function listAdminJerseys(adminToken, params = '') {
   return request(`/jerseys${params}`, {
-    headers: buildAdminHeaders(adminPassword)
+    headers: buildAdminHeaders(adminToken)
   });
 }
 
-export async function createAdminJersey(adminPassword, formData) {
+export async function createAdminJersey(adminToken, formData) {
   return request('/admin/jerseys', {
     method: 'POST',
-    headers: buildAdminHeaders(adminPassword),
+    headers: buildAdminHeaders(adminToken),
     body: formData
   });
 }
 
-export async function updateAdminJersey(adminPassword, jerseyId, formData) {
+export async function updateAdminJersey(adminToken, jerseyId, formData) {
   return request(`/admin/jerseys/${jerseyId}`, {
     method: 'PUT',
-    headers: buildAdminHeaders(adminPassword),
+    headers: buildAdminHeaders(adminToken),
     body: formData
   });
 }
 
-export async function deleteAdminJersey(adminPassword, jerseyId) {
-  return requestJson(`/admin/jerseys/${jerseyId}`, 'DELETE', undefined, buildAdminHeaders(adminPassword));
+export async function deleteAdminJersey(adminToken, jerseyId) {
+  return requestJson(`/admin/jerseys/${jerseyId}`, 'DELETE', undefined, buildAdminHeaders(adminToken));
 }
 
-export async function verifyAdminPassword(adminPassword) {
-  return requestJson('/admin/verify', 'POST', undefined, buildAdminHeaders(adminPassword));
+export async function verifyAdminToken(adminToken) {
+  return requestJson('/admin/verify', 'POST', undefined, buildAdminHeaders(adminToken));
+}
+
+export async function loginAdmin(password) {
+  return requestJson('/admin/login', 'POST', { password });
 }

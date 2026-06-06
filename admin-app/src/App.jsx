@@ -5,36 +5,36 @@ import BrandHeader from './components/BrandHeader';
 import AdminDashboard from './pages/AdminDashboard';
 import SettingsPage from './pages/SettingsPage';
 import Login from './pages/Login';
-import { verifyAdminPassword } from './api/admin';
+import { verifyAdminToken } from './api/admin';
 
 function App() {
-  const [adminPassword, setAdminPassword] = useState(() => window.localStorage.getItem('jerseyAddaAdminPassword') || '');
+  const [adminToken, setAdminToken] = useState(() => window.localStorage.getItem('jerseyAddaAdminToken') || '');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
-    if (adminPassword) {
-      verifyAdminPassword(adminPassword)
+    if (adminToken) {
+      verifyAdminToken(adminToken)
         .then(() => setIsAuthenticated(true))
         .catch(() => {
-          setAdminPassword('');
-          window.localStorage.removeItem('jerseyAddaAdminPassword');
+          setAdminToken('');
+          window.localStorage.removeItem('jerseyAddaAdminToken');
         })
         .finally(() => setIsVerifying(false));
     } else {
       setIsVerifying(false);
     }
-  }, [adminPassword]);
+  }, [adminToken]);
 
-  const handleLogin = (password) => {
-    setAdminPassword(password);
+  const handleLogin = (token) => {
+    setAdminToken(token);
     setIsAuthenticated(true);
-    window.localStorage.setItem('jerseyAddaAdminPassword', password);
+    window.localStorage.setItem('jerseyAddaAdminToken', token);
   };
 
   const handleLogout = () => {
-    setAdminPassword('');
-    window.localStorage.removeItem('jerseyAddaAdminPassword');
+    setAdminToken('');
+    window.localStorage.removeItem('jerseyAddaAdminToken');
     setIsAuthenticated(false);
   };
 
@@ -56,11 +56,11 @@ function App() {
         />
         <Route
           path="/"
-          element={isAuthenticated ? <AdminDashboard adminPassword={adminPassword} onLogout={handleLogout} onOpenPublic={openPublic} /> : <Navigate to="/login" />}
+          element={isAuthenticated ? <AdminDashboard adminToken={adminToken} onLogout={handleLogout} onOpenPublic={openPublic} /> : <Navigate to="/login" />}
         />
         <Route
           path="/settings"
-          element={isAuthenticated ? <SettingsPage adminPassword={adminPassword} /> : <Navigate to="/login" />}
+          element={isAuthenticated ? <SettingsPage adminToken={adminToken} /> : <Navigate to="/login" />}
         />
       </Routes>
     </BrowserRouter>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { verifyAdminPassword } from '../api/admin';
+import { loginAdmin } from '../api/admin';
 
 export default function Login({ onLoginSuccess }) {
   const [password, setPassword] = useState('');
@@ -20,8 +20,8 @@ export default function Login({ onLoginSuccess }) {
     setError('');
 
     try {
-      await verifyAdminPassword(password);
-      onLoginSuccess(password);
+      const response = await loginAdmin(password);
+      onLoginSuccess(response.token);
       navigate('/', { replace: true });
     } catch (err) {
       setError('Invalid admin password');
