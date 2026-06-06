@@ -3,7 +3,7 @@ const jerseyModel = require('../models/jersey.model');
 const { ApiError } = require('../utils/apiError');
 const cloudinaryService = require('./cloudinary.service');
 
-const defaultSizes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+const defaultSizes = ['S', 'M', 'L', 'XL', '2XL'];
 
 function normalizeOptionalString(value) {
   if (value === undefined || value === null || value === '') {

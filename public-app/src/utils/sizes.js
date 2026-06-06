@@ -1,4 +1,4 @@
-export const defaultJerseySizes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+export const defaultJerseySizes = ['S', 'M', 'L', 'XL', '2XL'];
 
 const sizeAliases = {
   ZXL: '2XL',

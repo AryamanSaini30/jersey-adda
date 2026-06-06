@@ -3,7 +3,7 @@ const { z } = require('zod');
 const allowedSleeveTypes = ['HALF', 'FULL'];
 const allowedVersionTypes = ['FAN', 'PLAYER'];
 const allowedFeaturedClubs = ['BARCELONA', 'REAL_MADRID', 'MAN_UNITED', 'AC_MILAN'];
-const allowedSizeTypes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+const allowedSizeTypes = ['S', 'M', 'L', 'XL', '2XL'];
 const allowedSortFields = ['created_at', 'price', 'name', 'team_name', 'featured_club'];
 const allowedSortOrders = ['asc', 'desc'];
 

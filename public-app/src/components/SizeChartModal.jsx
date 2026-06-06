@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 
-const sizeChartUrl = 'https://res.cloudinary.com/dlnf5iam6/image/upload/v1780690665/WhatsApp_Image_2026-06-06_at_01.36.23_iiy91g.jpg';
+const sizeChartUrl = 'https://res.cloudinary.com/dlnf5iam6/image/upload/v1780725540/WhatsApp_Image_2026-06-06_at_11.14.52_kafncm.jpg';
 
 export default function SizeChartModal({ open, onClose }) {
   if (!open) {

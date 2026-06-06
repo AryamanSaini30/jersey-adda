@@ -6,11 +6,13 @@ export default function BrandLogo({ className = '', showWordmark = true, compact
 
   return (
     <div className={`flex items-center gap-2.5 sm:gap-3 ${className}`.trim()}>
-      <img
-        src={logoUrl}
-        alt="Jersey Adda logo"
-        className={`${logoSizeClass} rounded-full object-contain bg-white shrink-0 shadow-sm`}
-      />
+      <div className={`${logoSizeClass} rounded-full overflow-hidden bg-white flex items-center justify-center shrink-0 border border-charcoal/10 shadow-xs`}>
+        <img
+          src={logoUrl}
+          alt="Jersey Adda logo"
+          className="h-full w-full object-cover scale-[1.15]"
+        />
+      </div>
       {showWordmark ? (
         <div className="block">
           <h1 className={`text-base sm:text-xl font-heading font-extrabold uppercase tracking-wider leading-none sm:leading-tight ${titleClass}`}>Jersey Adda</h1>

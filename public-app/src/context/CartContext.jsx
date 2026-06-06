@@ -19,7 +19,7 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (jersey, size) => {
+  const addToCart = (jersey, size, quantityToAdd = 1) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find(
         (item) => item.id === jersey.id && item.size === size
@@ -27,11 +27,11 @@ export const CartProvider = ({ children }) => {
       if (existingItem) {
         return prevCart.map((item) =>
           item.id === jersey.id && item.size === size
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + quantityToAdd }
             : item
         );
       }
-      return [...prevCart, { ...jersey, size, quantity: 1 }];
+      return [...prevCart, { ...jersey, size, quantity: quantityToAdd }];
     });
     setIsCartOpen(true);
   };
