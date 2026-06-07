@@ -20,6 +20,35 @@ const CheckoutPage = () => {
     state: '',
     postal_code: '',
   });
+  const [isPincodeLoading, setIsPincodeLoading] = useState(false);
+  const [pincodeError, setPincodeError] = useState('');
+
+  const lookupPincode = async (postalCode) => {
+    setIsPincodeLoading(true);
+    setPincodeError('');
+
+    try {
+      const response = await fetch(`https://api.postalpincode.in/pincode/${postalCode}`);
+      if (!response.ok) throw new Error('Pincode API request failed');
+      const data = await response.json();
+      const hasSuccess = data && data[0] && data[0].Status === 'Success' && Array.isArray(data[0].PostOffice) && data[0].PostOffice.length > 0;
+
+      if (hasSuccess) {
+        const postOffice = data[0].PostOffice[0];
+        setFormData((prev) => ({
+          ...prev,
+          city: postOffice.District || prev.city,
+          state: postOffice.State || prev.state,
+        }));
+      } else {
+        setPincodeError('Could not auto-fill city/state for this postal code. Please enter them manually.');
+      }
+    } catch (err) {
+      setPincodeError('Could not auto-fill city/state for this postal code. Please enter them manually.');
+    } finally {
+      setIsPincodeLoading(false);
+    }
+  };
 
   const handlePhoneSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -54,7 +83,20 @@ const CheckoutPage = () => {
   };
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === 'postal_code') {
+      const cleaned = value.replace(/[^0-9]/g, '').slice(0, 6);
+      setFormData({ ...formData, postal_code: cleaned });
+      setPincodeError('');
+
+      if (cleaned.length === 6) {
+        lookupPincode(cleaned);
+      }
+      return;
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSaveProfile = async () => {
@@ -275,6 +317,12 @@ const CheckoutPage = () => {
                       placeholder="Postal Code" 
                       className="w-full bg-cream border border-charcoal/20 rounded-none px-4 py-3 text-sm focus:outline-none focus:border-charcoal focus:bg-white transition-all text-charcoal font-sans" 
                     />
+                    {isPincodeLoading && (
+                      <p className="text-xs text-charcoal/60 mt-2">Looking up city and state...</p>
+                    )}
+                    {pincodeError && (
+                      <p className="text-xs text-red-600 mt-2">{pincodeError}</p>
+                    )}
                   </div>
                 </div>
 
