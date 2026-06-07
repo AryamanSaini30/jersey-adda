@@ -19,11 +19,13 @@ export default function CatalogPage() {
   const initialClub = queryParams.get('club') || 'All';
   const initialSearch = queryParams.get('search') || '';
   const initialIsOnSale = queryParams.get('is_on_sale') || 'All';
+  const initialCategory = queryParams.get('category') || 'All';
  
   const [search, setSearch] = useState(initialSearch);
   const [team, setTeam] = useState(initialTeam);
   const [club, setClub] = useState(initialClub);
   const [isOnSale, setIsOnSale] = useState(initialIsOnSale);
+  const [category, setCategory] = useState(initialCategory);
  
   useEffect(() => {
     let active = true;
@@ -45,6 +47,16 @@ export default function CatalogPage() {
     return () => { active = false; };
   }, []);
  
+  // Sync state with URL query parameters when they change (e.g. from homepage card clicks)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setSearch(params.get('search') || '');
+    setTeam(params.get('team') || 'All');
+    setClub(params.get('club') || 'All');
+    setIsOnSale(params.get('is_on_sale') || 'All');
+    setCategory(params.get('category') || 'All');
+  }, [location.search]);
+ 
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams();
@@ -52,9 +64,10 @@ export default function CatalogPage() {
     if (team !== 'All') params.set('team', team);
     if (club !== 'All') params.set('club', club);
     if (isOnSale !== 'All') params.set('is_on_sale', isOnSale);
+    if (category !== 'All') params.set('category', category);
     
     navigate({ search: params.toString() }, { replace: true });
-  }, [search, team, club, isOnSale, navigate]);
+  }, [search, team, club, isOnSale, category, navigate]);
  
   const teams = ['All', ...new Set(jerseys.map((jersey) => jersey.team_name).filter(Boolean))];
  
@@ -75,7 +88,9 @@ export default function CatalogPage() {
       matchesSale = jersey.is_on_sale === false;
     }
 
-    return matchesSearch && matchesTeam && matchesClub && matchesSale;
+    const matchesCategory = category === 'All' || jersey.category_type === category;
+
+    return matchesSearch && matchesTeam && matchesClub && matchesSale && matchesCategory;
   });
  
   return (
@@ -100,7 +115,22 @@ export default function CatalogPage() {
             />
           </div>
  
-          <div className="relative md:w-64">
+          {/* Category Dropdown */}
+          <div className="relative md:w-60">
+            <select 
+              value={category} 
+              onChange={(event) => setCategory(event.target.value)}
+              className="block w-full px-4 py-3 border border-charcoal/25 bg-white rounded-none leading-5 font-heading text-xs font-bold uppercase tracking-wider focus:outline-none focus:border-charcoal transition-all appearance-none cursor-pointer"
+            >
+              <option value="All">All Categories</option>
+              <option value="CLUB">Club Jerseys</option>
+              <option value="INTERNATIONAL">International Jerseys</option>
+              <option value="SHORTS">Jerseys With Shorts</option>
+              <option value="OTHER">Other Sports & Merchandise</option>
+            </select>
+          </div>
+
+          <div className="relative md:w-48">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-charcoal/40">
               <Filter className="w-4 h-4" />
             </div>
@@ -117,7 +147,7 @@ export default function CatalogPage() {
             </select>
           </div>
 
-          <div className="relative md:w-48">
+          <div className="relative md:w-40">
             <select 
               value={isOnSale} 
               onChange={(event) => setIsOnSale(event.target.value)}
@@ -143,7 +173,7 @@ export default function CatalogPage() {
         <div className="text-center py-20 bg-white rounded-none border border-charcoal/10 shadow-none">
           <h3 className="font-heading text-xl font-bold uppercase tracking-wider text-charcoal mb-2">No matches found</h3>
           <p className="text-sm text-charcoal/50 mb-6 font-sans">Try adjusting your search or filters.</p>
-          <button onClick={() => { setSearch(''); setTeam('All'); setClub('All'); setIsOnSale('All'); }} className="btn-primary">
+          <button onClick={() => { setSearch(''); setTeam('All'); setClub('All'); setIsOnSale('All'); setCategory('All'); }} className="btn-primary">
             Clear Filters
           </button>
         </div>
