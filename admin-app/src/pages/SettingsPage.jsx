@@ -5,7 +5,8 @@ import toast from 'react-hot-toast';
 
 const SettingsPage = ({ adminToken }) => {
   const navigate = useNavigate();
-  const [settings, setSettings] = useState({ whatsapp_number: '', whatsapp_message_template: '' });
+  const defaultTemplate = 'New order received: {{order_number}} from {{customer_name}} ({{customer_phone}}). Address: {{customer_address}}. Items: {{order_items}}. Total: ₹{{total_amount}}. Ordered on {{order_date}}.';
+  const [settings, setSettings] = useState({ whatsapp_number: '', whatsapp_message_template: defaultTemplate });
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -15,7 +16,7 @@ const SettingsPage = ({ adminToken }) => {
         const { data } = await http.get('/admin/settings');
         setSettings({
           whatsapp_number: data?.data?.whatsapp_number || data?.whatsapp_number || '',
-          whatsapp_message_template: data?.data?.whatsapp_message_template || data?.whatsapp_message_template || '',
+          whatsapp_message_template: data?.data?.whatsapp_message_template || data?.whatsapp_message_template || defaultTemplate,
         });
       } catch (error) {
         toast.error('Failed to load settings.');
