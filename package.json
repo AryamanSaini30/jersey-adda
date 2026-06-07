@@ -1,0 +1,12 @@
+{
+  "name": "jersey-adda",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo entrypoint for Jersey Adda frontend applications",
+  "scripts": {
+    "build": "npm --prefix admin-app run build && npm --prefix public-app run build",
+    "build:admin": "npm --prefix admin-app run build",
+    "build:public": "npm --prefix public-app run build",
+    "build:server": "echo \"Server has no build step\""
+  }
+}

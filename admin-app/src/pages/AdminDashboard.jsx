@@ -58,6 +58,11 @@ function createFormData(form, files) {
       return;
     }
 
+    if (key === 'featured_club') {
+      formData.append(key, String(value));
+      return;
+    }
+
     if (value === '' || value === null || value === undefined) return;
 
     if (Array.isArray(value)) {

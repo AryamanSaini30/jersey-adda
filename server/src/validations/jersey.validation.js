@@ -272,7 +272,10 @@ const jerseyUpdateSchema = z.object({
     z.enum(allowedVersionTypes).optional().nullable()
   ),
   featured_club: z.preprocess(
-    (value) => emptyToUndefined(value),
+    (value) => {
+      if (value === '') return null;
+      return emptyToUndefined(value);
+    },
     z.enum(allowedFeaturedClubs).optional().nullable()
   ),
   available_sizes: z.preprocess(normalizeSizeList, z.array(z.enum(allowedSizeTypes)).optional().nullable()),
