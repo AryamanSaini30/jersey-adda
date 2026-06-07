@@ -22,7 +22,7 @@ const tabs = [
   {
     id: 'OTHER',
     label: 'Other Sports & Jerseys on Sale',
-    bgImage: '/images/other_sports_category_bg.png',
+    bgImage: 'https://res.cloudinary.com/dlnf5iam6/image/upload/v1780860773/abhay-siby-mathew-bGMjzkeAGkQ-unsplash_ooqy03.jpg',
     color: 'from-purple-950/80 to-indigo-900/80',
   }
 ];
