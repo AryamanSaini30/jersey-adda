@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { listJerseys } from '../api/jerseys';
 import JerseyCard from '../components/JerseyCard';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, ArrowLeft } from 'lucide-react';
 import { matchesClubFilter } from '../utils/clubs';
 
 export default function CatalogPage() {
@@ -95,6 +95,16 @@ export default function CatalogPage() {
  
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Back to Home Navigation Link */}
+      <div className="mb-6">
+        <Link 
+          to="/" 
+          className="inline-flex items-center gap-2 font-heading text-xs font-bold uppercase tracking-widest text-charcoal/60 hover:text-charcoal transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Home
+        </Link>
+      </div>
+
       <div className="bg-white rounded-none shadow-none border border-charcoal/10 p-6 sm:p-8 mb-10">
         <h1 className="font-heading text-3xl md:text-4xl font-extrabold uppercase tracking-wider text-charcoal mb-3">Complete Catalog</h1>
         <p className="text-charcoal/60 mb-8 max-w-3xl text-sm font-sans leading-relaxed">
