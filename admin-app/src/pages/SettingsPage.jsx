@@ -5,7 +5,15 @@ import toast from 'react-hot-toast';
 
 const SettingsPage = ({ adminToken }) => {
   const navigate = useNavigate();
-  const defaultTemplate = 'New order received: {{order_number}} from {{customer_name}} ({{customer_phone}}). Address: {{customer_address}}. Items: {{order_items}}. Total: ₹{{total_amount}}. Ordered on {{order_date}}.';
+  const defaultTemplate = `DETAILS
+ORDER NO:- {{order_number}}
+NAME: {{customer_name}}
+PH No:- {{customer_phone}}
+ADDRESS:- {{customer_address}}
+PINCODE:- {{postal_code}}
+JERSEY:- {{order_items}}
+TOTAL:- ₹{{total_amount}}
+DATE:- {{order_date}}`;
   const [settings, setSettings] = useState({ whatsapp_number: '', whatsapp_message_template: defaultTemplate });
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -86,6 +94,7 @@ const SettingsPage = ({ adminToken }) => {
     customer_name: 'Rahul Sharma',
     customer_phone: '+919876543210',
     customer_address: '123 Main Road, Flat 4B, Indiranagar, Bangalore, Karnataka - 560038',
+    postal_code: '560048',
     order_items: '- Real Madrid 24/25 Jersey (M) x 1 - Price: ₹1,500\n- Arsenal 24/25 Home Jersey (L) x 2 - Price: ₹3,000',
     total_amount: '4,500',
     order_date: new Date().toLocaleDateString('en-IN')
@@ -100,6 +109,7 @@ const SettingsPage = ({ adminToken }) => {
       .replace(/\{\{customer_address\}\}/g, sampleData.customer_address)
       .replace(/\{\{order_items\}\}/g, sampleData.order_items)
       .replace(/\{\{total_amount\}\}/g, sampleData.total_amount)
+      .replace(/\{\{postal_code\}\}/g, sampleData.postal_code)
       .replace(/\{\{order_date\}\}/g, sampleData.order_date);
   };
 
@@ -215,8 +225,8 @@ const SettingsPage = ({ adminToken }) => {
                 <div style={{ marginTop: '8px', fontSize: '0.8rem', color: 'var(--muted)' }}>
                   <span style={{ fontWeight: 'bold', color: 'var(--text)' }}>Available Placeholders:</span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
-                    {['{{order_number}}', '{{customer_name}}', '{{customer_phone}}', '{{customer_address}}', '{{order_items}}', '{{total_amount}}', '{{order_date}}'].map(ph => (
-                      <code key={ph} style={{ background: 'rgba(255,255,255,0.06)', padding: '2px 6px', color: 'var(--accent)', border: '1px solid var(--border)', fontSize: '0.75rem' }}>{ph}</code>
+                    {['{{order_number}}', '{{customer_name}}', '{{customer_phone}}', '{{customer_address}}', '{{postal_code}}', '{{order_items}}', '{{total_amount}}', '{{order_date}}'].map(ph => (
+                      <code key={ph} style={{ background: '#111827', padding: '6px 10px', color: '#f8fafc', border: '1px solid rgba(255,255,255,0.08)', fontSize: '0.75rem', borderRadius: '6px' }}>{ph}</code>
                     ))}
                   </div>
                 </div>
