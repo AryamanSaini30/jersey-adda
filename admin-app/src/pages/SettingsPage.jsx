@@ -5,18 +5,21 @@ import toast from 'react-hot-toast';
 
 const SettingsPage = ({ adminToken }) => {
   const navigate = useNavigate();
-  const [settings, setSettings] = useState({ whatsapp_number: '' });
+  const [settings, setSettings] = useState({ whatsapp_number: '', whatsapp_message_template: '' });
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const { data } = await http.get('/settings');
-        setSettings({ whatsapp_number: data?.data?.whatsapp_number || data?.whatsapp_number || '' });
+        const { data } = await http.get('/admin/settings');
+        setSettings({
+          whatsapp_number: data?.data?.whatsapp_number || data?.whatsapp_number || '',
+          whatsapp_message_template: data?.data?.whatsapp_message_template || data?.whatsapp_message_template || '',
+        });
       } catch (error) {
         toast.error('Failed to load settings.');
-        setSettings({ whatsapp_number: '' });
+        setSettings({ whatsapp_number: '', whatsapp_message_template: '' });
       } finally {
         setLoading(false);
       }
@@ -28,6 +31,7 @@ const SettingsPage = ({ adminToken }) => {
     if (e) e.preventDefault();
     
     const num = (settings?.whatsapp_number || '').trim();
+    const template = (settings?.whatsapp_message_template || '').trim();
     if (!num) {
       toast.error('WhatsApp number is required.');
       return;
@@ -36,10 +40,14 @@ const SettingsPage = ({ adminToken }) => {
       toast.error('Please enter a valid WhatsApp number starting with + and country code (e.g. +919876543210).');
       return;
     }
+    if (!template) {
+      toast.error('WhatsApp message template is required.');
+      return;
+    }
 
     setIsSaving(true);
     try {
-      await http.put('/settings', { whatsapp_number: num }, {
+      await http.put('/admin/settings', { whatsapp_number: num, whatsapp_message_template: template }, {
         headers: {
           'Authorization': `Bearer ${adminToken || window.localStorage.getItem('jerseyAddaAdminToken') || ''}`
         }
@@ -71,6 +79,28 @@ const SettingsPage = ({ adminToken }) => {
       </div>
     );
   }
+
+  const sampleData = {
+    order_number: 'ORD-10001',
+    customer_name: 'Rahul Sharma',
+    customer_phone: '+919876543210',
+    customer_address: '123 Main Road, Flat 4B, Indiranagar, Bangalore, Karnataka - 560038',
+    order_items: '- Real Madrid 24/25 Jersey (M) x 1 - Price: ₹1,500\n- Arsenal 24/25 Home Jersey (L) x 2 - Price: ₹3,000',
+    total_amount: '4,500',
+    order_date: new Date().toLocaleDateString('en-IN')
+  };
+
+  const renderPreview = (template) => {
+    if (!template) return '';
+    return template
+      .replace(/\{\{order_number\}\}/g, sampleData.order_number)
+      .replace(/\{\{customer_name\}\}/g, sampleData.customer_name)
+      .replace(/\{\{customer_phone\}\}/g, sampleData.customer_phone)
+      .replace(/\{\{customer_address\}\}/g, sampleData.customer_address)
+      .replace(/\{\{order_items\}\}/g, sampleData.order_items)
+      .replace(/\{\{total_amount\}\}/g, sampleData.total_amount)
+      .replace(/\{\{order_date\}\}/g, sampleData.order_date);
+  };
 
   return (
     <main className="page admin-page" style={{ paddingBottom: '60px' }}>
@@ -154,6 +184,41 @@ const SettingsPage = ({ adminToken }) => {
                     padding: '16px',
                   }}
                 />
+              </label>
+
+              <label className="search-box" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  WhatsApp Message Template
+                </span>
+                <textarea
+                  id="whatsapp_message_template"
+                  value={settings?.whatsapp_message_template || ''}
+                  onChange={(e) => setSettings({ ...settings, whatsapp_message_template: e.target.value })}
+                  placeholder="Enter message template..."
+                  rows={12}
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'var(--cream)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '0',
+                    color: 'var(--text)',
+                    padding: '16px',
+                    fontSize: '0.95rem',
+                    fontFamily: 'monospace',
+                    lineHeight: '1.4',
+                    resize: 'vertical',
+                    outline: 'none',
+                    marginTop: '4px',
+                  }}
+                />
+                <div style={{ marginTop: '8px', fontSize: '0.8rem', color: 'var(--muted)' }}>
+                  <span style={{ fontWeight: 'bold', color: 'var(--text)' }}>Available Placeholders:</span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
+                    {['{{order_number}}', '{{customer_name}}', '{{customer_phone}}', '{{customer_address}}', '{{order_items}}', '{{total_amount}}', '{{order_date}}'].map(ph => (
+                      <code key={ph} style={{ background: 'rgba(255,255,255,0.06)', padding: '2px 6px', color: 'var(--accent)', border: '1px solid var(--border)', fontSize: '0.75rem' }}>{ph}</code>
+                    ))}
+                  </div>
+                </div>
               </label>
             </div>
 
@@ -272,16 +337,7 @@ const SettingsPage = ({ adminToken }) => {
                 boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
               }}
             >
-              <strong>🛒 NEW ORDER RECEIVED!</strong>{'\n\n'}
-              <strong>Customer:</strong> John Doe{'\n'}
-              <strong>Phone:</strong> +91 98765 43210{'\n\n'}
-              <strong>Items:</strong>{'\n'}
-              - Real Madrid 24/25 Jersey (M) x 1{'\n'}
-              - Barcelona 24/25 Jersey (L) x 2{'\n\n'}
-              <strong>Total Amount:</strong> ₹4,500{'\n\n'}
-              <strong>Delivery Address:</strong>{'\n'}
-              123 Street Name, Flat 4B,{'\n'}
-              Mumbai, Maharashtra - 400001
+              {renderPreview(settings?.whatsapp_message_template) || 'Enter template text to preview...'}
             </div>
 
             <div style={{ textAlign: 'right', marginTop: '4px' }}>
