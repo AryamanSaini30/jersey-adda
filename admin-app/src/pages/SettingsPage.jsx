@@ -21,7 +21,7 @@ DATE:- {{order_date}}`;
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const { data } = await http.get('/admin/settings');
+        const { data } = await http.get('/settings');
         setSettings({
           whatsapp_number: data?.data?.whatsapp_number || data?.whatsapp_number || '',
           whatsapp_message_template: data?.data?.whatsapp_message_template || data?.whatsapp_message_template || defaultTemplate,
@@ -56,7 +56,7 @@ DATE:- {{order_date}}`;
 
     setIsSaving(true);
     try {
-      await http.put('/admin/settings', { whatsapp_number: num, whatsapp_message_template: template }, {
+      await http.put('/settings', { whatsapp_number: num, whatsapp_message_template: template }, {
         headers: {
           'Authorization': `Bearer ${adminToken || window.localStorage.getItem('jerseyAddaAdminToken') || ''}`
         }
