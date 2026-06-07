@@ -1,6 +1,22 @@
 const Order = require('../models/order.model');
 const Settings = require('../models/settings.model');
 
+const defaultWhatsAppTemplate = `DETAILS
+ORDER NO:- {{order_number}}
+NAME: {{customer_name}}
+PH No:- {{customer_phone}}
+ADDRESS:- {{customer_address}}
+PINCODE:- {{postal_code}}
+JERSEY:- {{order_items}}
+TOTAL:- ₹{{total_amount}}
+DATE:- {{order_date}}`;
+
+const renderTemplate = (template, values) => {
+  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
+    return values[key] ?? '';
+  });
+};
+
 const createOrder = async (orderPayload) => {
   const { customer, cart, totalAmount } = orderPayload;
 
@@ -20,14 +36,14 @@ const createOrder = async (orderPayload) => {
   const settings = await Settings.get();
   const whatsappNumber = settings.whatsapp_number;
 
-  const message = generateWhatsAppMessage(newOrder, customer);
+  const message = generateWhatsAppMessage(newOrder, customer, settings);
   const encodedMessage = encodeURIComponent(message);
   const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
 
   return { order: newOrder, whatsappUrl };
 };
 
-const generateWhatsAppMessage = (order, customer) => {
+const generateWhatsAppMessage = (order, customer, settings) => {
   const items = order.items
     .map(
       (item) =>
@@ -36,10 +52,20 @@ const generateWhatsAppMessage = (order, customer) => {
     .join('\n');
 
   const total = `₹${Number(order.total_amount).toLocaleString('en-IN')}`;
+  const customerAddress = `${customer.address_line_1}${customer.address_line_2 ? '\n' + customer.address_line_2 : ''}\n${customer.city}, ${customer.state} - ${customer.postal_code}`;
+  const orderDate = new Date(order.created_at || Date.now()).toLocaleDateString('en-IN');
 
-  return `🛒 *NEW ORDER RECEIVED!*\n\n*Order Number:* ${
-    order.order_number
-  }\n\n*Customer Details:*\n- *Name:* ${customer.name}\n- *Phone:* ${customer.phone}\n- *Shipping Address:*\n${customer.address_line_1}${customer.address_line_2 ? '\n' + customer.address_line_2 : ''}\n${customer.city}, ${customer.state} - ${customer.postal_code}\n\n*Items Ordered:*\n${items}\n\n*Total Amount:* ${total}\n\nStatus: Pending confirmation.`;
+  const template = settings?.whatsapp_message_template || defaultWhatsAppTemplate;
+  return renderTemplate(template, {
+    order_number: order.order_number,
+    customer_name: customer.name,
+    customer_phone: customer.phone,
+    customer_address: customerAddress,
+    postal_code: customer.postal_code,
+    order_items: items,
+    total_amount: total,
+    order_date: orderDate,
+  });
 };
 
 const orderService = {

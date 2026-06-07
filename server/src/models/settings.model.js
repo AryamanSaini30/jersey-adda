@@ -16,6 +16,7 @@ const Settings = {
       .from('settings')
       .update({
         whatsapp_number: newSettings.whatsapp_number,
+        whatsapp_message_template: newSettings.whatsapp_message_template,
         updated_at: new Date(),
       })
       .eq('id', current.id)
