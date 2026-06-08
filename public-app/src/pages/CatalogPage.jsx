@@ -9,6 +9,9 @@ export default function CatalogPage() {
   const [jerseys, setJerseys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(null);
   
   const location = useLocation();
   const navigate = useNavigate();
@@ -32,14 +35,38 @@ export default function CatalogPage() {
   const [sortByPrice, setSortByPrice] = useState(initialSort);
  
   useEffect(() => {
+    setPage(1);
+    setJerseys([]);
+    setHasMore(false);
+    setTotal(null);
+  }, [search, team, club, isOnSale, category, version]);
+
+  useEffect(() => {
     let active = true;
     async function fetchJerseys() {
       setLoading(true);
       setError('');
+
+      const params = new URLSearchParams();
+      params.set('limit', '100');
+      params.set('page', String(page));
+      if (search) params.set('search', search);
+      if (team !== 'All') params.set('team', team);
+      if (category !== 'All') params.set('category', category);
+      if (version !== 'All') params.set('version', version);
+      if (isOnSale !== 'All') params.set('is_on_sale', isOnSale);
+
       try {
-        const response = await listJerseys('?limit=100');
+        const response = await listJerseys(`?${params.toString()}`);
         if (!active) return;
-        setJerseys(Array.isArray(response.data?.items) ? response.data.items : []);
+
+        const items = Array.isArray(response.data?.items) ? response.data.items : [];
+        const pagination = response.data?.pagination;
+        const nextHasMore = pagination ? page < pagination.total_pages : items.length === 100;
+
+        setJerseys((current) => (page === 1 ? items : [...current, ...items]));
+        setHasMore(nextHasMore);
+        setTotal(pagination?.total ?? null);
       } catch (err) {
         if (!active) return;
         setError(err.message || 'Failed to load jerseys');
@@ -47,9 +74,10 @@ export default function CatalogPage() {
         if (active) setLoading(false);
       }
     }
+
     fetchJerseys();
     return () => { active = false; };
-  }, []);
+  }, [search, team, club, isOnSale, category, version, page]);
  
   // Sync state with URL query parameters when they change (e.g. from homepage card clicks)
   useEffect(() => {
@@ -211,10 +239,15 @@ export default function CatalogPage() {
         </div>
       </div>
  
-      <div className="mb-6 flex justify-between items-end">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <h2 className="font-heading text-xl font-extrabold uppercase tracking-wider text-charcoal">
           {loading ? 'Loading jerseys...' : `${filtered.length} jerseys available`}
         </h2>
+        {total !== null ? (
+          <p className="text-sm text-charcoal/60 font-sans">
+            Showing {jerseys.length} of {total} jerseys loaded
+          </p>
+        ) : null}
       </div>
  
       {error && <p className="bg-red-50 text-red-600 p-4 rounded-none border border-red-150 font-sans text-sm">{error}</p>}
@@ -234,6 +267,18 @@ export default function CatalogPage() {
           <JerseyCard key={jersey.id} jersey={jersey} />
         ))}
       </div>
+
+      {hasMore && !loading && (
+        <div className="mt-8 text-center">
+          <button
+            type="button"
+            onClick={() => setPage((current) => current + 1)}
+            className="btn-primary px-6 py-3"
+          >
+            Load more jerseys
+          </button>
+        </div>
+      )}
     </main>
   );
 }
