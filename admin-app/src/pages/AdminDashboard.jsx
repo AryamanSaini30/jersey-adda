@@ -125,7 +125,7 @@ function buildQuery(filters) {
   if (filters.sleeve !== 'ALL') params.set('sleeve_type', filters.sleeve);
   if (filters.version !== 'ALL') params.set('version_type', filters.version);
   if (filters.team) params.set('team', filters.team);
-  params.set('limit', '1000');
+  params.set('limit', '100');
 
   const query = params.toString();
   return query ? `?${query}` : '';
