@@ -118,13 +118,14 @@ function mapJerseyToForm(jersey) {
 function buildQuery(filters) {
   const params = new URLSearchParams();
   if (filters.search) params.set('search', filters.search);
-  if (filters.scope === 'NATIONAL') params.set('national_team', 'true');
-  if (filters.scope === 'CLUBS') params.set('national_team', 'false');
+  if (filters.scope === 'INTERNATIONAL') params.set('category_type', 'INTERNATIONAL');
+  if (filters.scope === 'CLUB') params.set('category_type', 'CLUB');
   if (filters.shorts === 'INCLUDED') params.set('has_shorts', 'true');
   if (filters.shorts === 'NOT_INCLUDED') params.set('has_shorts', 'false');
   if (filters.sleeve !== 'ALL') params.set('sleeve_type', filters.sleeve);
   if (filters.version !== 'ALL') params.set('version_type', filters.version);
   if (filters.team) params.set('team', filters.team);
+  params.set('limit', '1000');
 
   const query = params.toString();
   return query ? `?${query}` : '';
@@ -173,8 +174,8 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
 
       const matchesScope =
         filters.scope === 'ALL' ||
-        (filters.scope === 'NATIONAL' && jersey.is_national_team) ||
-        (filters.scope === 'CLUBS' && !jersey.is_national_team);
+        (filters.scope === 'INTERNATIONAL' && jersey.category_type === 'INTERNATIONAL') ||
+        (filters.scope === 'CLUB' && jersey.category_type === 'CLUB');
 
       const matchesShorts =
         filters.shorts === 'ALL' ||
@@ -353,11 +354,11 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
               </label>
 
               <label className="search-box">
-                <span>Nation teams / clubs</span>
+                <span>International / club</span>
                 <select value={filters.scope} onChange={(event) => setFilters({ ...filters, scope: event.target.value })}>
                   <option value="ALL">All jerseys</option>
-                  <option value="NATIONAL">National teams</option>
-                  <option value="CLUBS">Clubs</option>
+                  <option value="INTERNATIONAL">International jerseys</option>
+                  <option value="CLUB">Club jerseys</option>
                 </select>
               </label>
 
