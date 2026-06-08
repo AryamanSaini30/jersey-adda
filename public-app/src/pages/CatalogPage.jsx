@@ -52,6 +52,7 @@ export default function CatalogPage() {
       params.set('page', String(page));
       if (search) params.set('search', search);
       if (team !== 'All') params.set('team', team);
+      if (club !== 'All') params.set('featured_club', club);
       if (category !== 'All') params.set('category', category);
       if (version !== 'All') params.set('version', version);
       if (isOnSale !== 'All') params.set('is_on_sale', isOnSale);
@@ -136,6 +137,13 @@ export default function CatalogPage() {
   } else if (sortByPrice === 'HighToLow') {
     sorted.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
   }
+ 
+  const displayedJerseyCount = sorted.length;
+  const headerText = loading
+    ? 'Loading jerseys...'
+    : total !== null
+      ? `Showing ${displayedJerseyCount} of ${total} jerseys`
+      : `${displayedJerseyCount} jerseys available`;
  
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -241,11 +249,11 @@ export default function CatalogPage() {
  
       <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <h2 className="font-heading text-xl font-extrabold uppercase tracking-wider text-charcoal">
-          {loading ? 'Loading jerseys...' : `${filtered.length} jerseys available`}
+          {headerText}
         </h2>
         {total !== null ? (
           <p className="text-sm text-charcoal/60 font-sans">
-            Showing {jerseys.length} of {total} jerseys loaded
+            Showing {displayedJerseyCount} of {total} jerseys loaded
           </p>
         ) : null}
       </div>
