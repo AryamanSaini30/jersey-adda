@@ -421,9 +421,9 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
             <div className="section-head admin-list__header">
               <div>
                 <p className="eyebrow">Results</p>
-                <h2>{loading ? 'Loading...' : `${filteredJerseys.length} saved jerseys`}</h2>
+                <h2>{loading ? 'Loading...' : `${total !== null ? total : filteredJerseys.length} saved jerseys`}</h2>
                 {total !== null ? (
-                  <small className="text-charcoal/60">Showing {jerseys.length} of {total} jerseys</small>
+                  <small className="text-charcoal/60">Showing {jerseys.length} of {total} loaded</small>
                 ) : null}
               </div>
             </div>
