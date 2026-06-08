@@ -115,7 +115,7 @@ function mapJerseyToForm(jersey) {
   };
 }
 
-function buildQuery(filters) {
+function buildQuery(filters, page = 1) {
   const params = new URLSearchParams();
   if (filters.search) params.set('search', filters.search);
   if (filters.scope === 'INTERNATIONAL') params.set('category_type', 'INTERNATIONAL');
@@ -126,6 +126,7 @@ function buildQuery(filters) {
   if (filters.version !== 'ALL') params.set('version_type', filters.version);
   if (filters.team) params.set('team', filters.team);
   params.set('limit', '100');
+  if (page > 1) params.set('page', String(page));
 
   const query = params.toString();
   return query ? `?${query}` : '';
@@ -149,6 +150,9 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
     version: 'ALL',
     team: ''
   });
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(null);
 
   const selectedJersey = useMemo(
     () => jerseys.find((jersey) => jersey.id === selectedJerseyId) || null,
@@ -198,6 +202,13 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
   }, [selectedJersey]);
 
   useEffect(() => {
+    setPage(1);
+    setJerseys([]);
+    setHasMore(false);
+    setTotal(null);
+  }, [filters]);
+
+  useEffect(() => {
     let active = true;
 
     async function loadJerseys() {
@@ -205,11 +216,16 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
       setError('');
 
       try {
-        const response = await listAdminJerseys(adminToken, buildQuery(filters));
+        const response = await listAdminJerseys(adminToken, buildQuery(filters, page));
         if (!active) return;
 
         const items = response.data?.items || [];
-        setJerseys(items);
+        const pagination = response.data?.pagination;
+        const nextHasMore = pagination ? page < pagination.total_pages : items.length === 100;
+
+        setJerseys((current) => (page === 1 ? items : [...current, ...items]));
+        setHasMore(nextHasMore);
+        setTotal(pagination?.total ?? null);
         setSelectedJerseyId((current) => (items.some((item) => item.id === current) ? current : items[0]?.id || ''));
       } catch (loadError) {
         if (!active) return;
@@ -224,7 +240,7 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
     return () => {
       active = false;
     };
-  }, [adminToken, filters]);
+  }, [adminToken, filters, page]);
 
   const resetForm = () => {
     setSelectedJerseyId('');
@@ -257,7 +273,7 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
         : await createAdminJersey(adminToken, payload);
 
       setMessage(isNew ? 'Jersey created' : 'Jersey updated');
-      const updatedJerseys = await listAdminJerseys(adminToken, buildQuery(filters));
+      const updatedJerseys = await listAdminJerseys(adminToken, buildQuery(filters, page));
       setJerseys(updatedJerseys.data?.items || []);
 
       if (response.data?.id) {
@@ -286,7 +302,7 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
 
     try {
       await deleteAdminJersey(adminToken, selectedJersey.id);
-      const updatedJerseys = await listAdminJerseys(adminToken, buildQuery(filters));
+      const updatedJerseys = await listAdminJerseys(adminToken, buildQuery(filters, page));
       setJerseys(updatedJerseys.data?.items || []);
       resetForm();
       setMessage('Jersey deleted');
@@ -406,6 +422,9 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
               <div>
                 <p className="eyebrow">Results</p>
                 <h2>{loading ? 'Loading...' : `${filteredJerseys.length} saved jerseys`}</h2>
+                {total !== null ? (
+                  <small className="text-charcoal/60">Showing {jerseys.length} of {total} jerseys</small>
+                ) : null}
               </div>
             </div>
 
@@ -417,6 +436,18 @@ export default function AdminDashboard({ adminToken, onLogout, onOpenPublic }) {
                 </button>
               ))}
             </div>
+
+            {hasMore && !loading ? (
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  className="action-button action-button--primary"
+                  onClick={() => setPage((current) => current + 1)}
+                >
+                  Load more jerseys
+                </button>
+              </div>
+            ) : null}
           </aside>
 
           <section className="panel admin-form-panel">
