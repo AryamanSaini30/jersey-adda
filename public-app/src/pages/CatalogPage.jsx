@@ -37,7 +37,7 @@ export default function CatalogPage() {
       setLoading(true);
       setError('');
       try {
-        const response = await listJerseys('?limit=1000');
+        const response = await listJerseys('?limit=100');
         if (!active) return;
         setJerseys(Array.isArray(response.data?.items) ? response.data.items : []);
       } catch (err) {
