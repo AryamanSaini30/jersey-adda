@@ -138,12 +138,12 @@ export default function CatalogPage() {
     sorted.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
   }
  
-  const displayedJerseyCount = sorted.length;
+  const loadedJerseyCount = jerseys.length;
   const headerText = loading
     ? 'Loading jerseys...'
     : total !== null
-      ? `Showing ${displayedJerseyCount} of ${total} jerseys`
-      : `${displayedJerseyCount} jerseys available`;
+      ? `Showing ${loadedJerseyCount} of ${total} total jerseys`
+      : `${loadedJerseyCount} jerseys available`;
  
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -253,7 +253,7 @@ export default function CatalogPage() {
         </h2>
         {total !== null ? (
           <p className="text-sm text-charcoal/60 font-sans">
-            Showing {displayedJerseyCount} of {total} jerseys loaded
+            Loaded {loadedJerseyCount} of {total} total jerseys
           </p>
         ) : null}
       </div>
