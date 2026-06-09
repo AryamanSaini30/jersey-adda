@@ -173,6 +173,18 @@ const jerseyListQuerySchema = z
     is_on_sale: booleanQuerySchema(),
     page: integerQuerySchema(1, 1, 1000000),
     limit: integerQuerySchema(12, 1, 100),
+    offset: z.preprocess((value) => {
+      if (value === undefined || value === null || value === '') {
+        return undefined;
+      }
+      return Number(value);
+    }, z.number().int().min(0).optional()),
+    totalCount: z.preprocess((value) => {
+      if (value === undefined || value === null || value === '') {
+        return undefined;
+      }
+      return Number(value);
+    }, z.number().int().min(0).optional()),
     sort_by: z.preprocess((value) => emptyToUndefined(value), z.enum(allowedSortFields).default('created_at')),
     sort_order: z.preprocess((value) => emptyToUndefined(value), z.enum(allowedSortOrders).default('desc'))
   })

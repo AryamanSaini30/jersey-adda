@@ -6,6 +6,7 @@ import CategoryTabs from '../components/CategoryTabs';
 import JerseyCard from '../components/JerseyCard';
 import FeaturedClubs from '../components/FeaturedClubs';
 import WhyChooseUs from '../components/WhyChooseUs';
+import SpecialCollections from '../components/SpecialCollections';
 
 export default function HomePage() {
   const [lovedJerseys, setLovedJerseys] = useState([]);
@@ -95,6 +96,9 @@ export default function HomePage() {
           </div>
         )}
       </div>
+
+      {/* Special Collections */}
+      <SpecialCollections />
 
       {/* 3. Shop by Club */}
       <FeaturedClubs />

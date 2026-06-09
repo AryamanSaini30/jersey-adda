@@ -39,7 +39,7 @@ export default function CatalogPage() {
     setJerseys([]);
     setHasMore(false);
     setTotal(null);
-  }, [search, team, club, isOnSale, category, version]);
+  }, [search, team, club, isOnSale, category, version, sortByPrice]);
 
   useEffect(() => {
     let active = true;
@@ -48,26 +48,54 @@ export default function CatalogPage() {
       setError('');
 
       const params = new URLSearchParams();
-      params.set('limit', '100');
+      params.set('limit', '12');
       params.set('page', String(page));
       if (search) params.set('search', search);
       if (team !== 'All') params.set('team', team);
       if (club !== 'All') params.set('featured_club', club);
-      if (category !== 'All') params.set('category', category);
-      if (version !== 'All') params.set('version', version);
-      if (isOnSale !== 'All') params.set('is_on_sale', isOnSale);
+
+      // Map categories to backend filters
+      if (category === 'CLUB') {
+        params.set('category_type', 'CLUB');
+      } else if (category === 'INTERNATIONAL') {
+        params.set('national_team', 'true');
+      } else if (category === 'SHORTS') {
+        params.set('has_shorts', 'true');
+      } else if (category === 'OTHER') {
+        params.set('category_type', 'OTHER');
+      }
+
+      if (version !== 'All') params.set('version_type', version);
+
+      if (isOnSale === 'Yes') {
+        params.set('is_on_sale', 'true');
+      } else if (isOnSale === 'No') {
+        params.set('is_on_sale', 'false');
+      }
+
+      // Map sort logic
+      if (sortByPrice === 'LowToHigh') {
+        params.set('sort_by', 'price');
+        params.set('sort_order', 'asc');
+      } else if (sortByPrice === 'HighToLow') {
+        params.set('sort_by', 'price');
+        params.set('sort_order', 'desc');
+      } else {
+        params.set('sort_by', 'created_at');
+        params.set('sort_order', 'desc');
+      }
 
       try {
         const response = await listJerseys(`?${params.toString()}`);
         if (!active) return;
 
-        const items = Array.isArray(response.data?.items) ? response.data.items : [];
-        const pagination = response.data?.pagination;
-        const nextHasMore = pagination ? page < pagination.total_pages : items.length === 100;
+        const items = Array.isArray(response.data?.products) ? response.data.products : [];
+        const nextHasMore = response.data?.hasMore ?? false;
+        const totalCount = response.data?.totalCount ?? 0;
 
         setJerseys((current) => (page === 1 ? items : [...current, ...items]));
         setHasMore(nextHasMore);
-        setTotal(pagination?.total ?? null);
+        setTotal(totalCount);
       } catch (err) {
         if (!active) return;
         setError(err.message || 'Failed to load jerseys');
@@ -78,7 +106,7 @@ export default function CatalogPage() {
 
     fetchJerseys();
     return () => { active = false; };
-  }, [search, team, club, isOnSale, category, version, page]);
+  }, [search, team, club, isOnSale, category, version, page, sortByPrice]);
  
   // Sync state with URL query parameters when they change (e.g. from homepage card clicks)
   useEffect(() => {
@@ -108,41 +136,13 @@ export default function CatalogPage() {
  
   const teams = ['All', ...new Set(jerseys.map((jersey) => jersey.team_name).filter(Boolean))];
  
-  const filtered = jerseys.filter((jersey) => {
-    const matchesSearch = [jersey.name, jersey.team_name, jersey.league_name, jersey.description]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase()
-      .includes(search.toLowerCase());
- 
-    const matchesTeam = team === 'All' || jersey.team_name === team;
-    const matchesClub = club === 'All' || matchesClubFilter(jersey, club);
-    
-    let matchesSale = true;
-    if (isOnSale === 'Yes') {
-      matchesSale = jersey.is_on_sale === true;
-    } else if (isOnSale === 'No') {
-      matchesSale = jersey.is_on_sale === false;
-    }
-
-    const matchesVersion = version === 'All' || jersey.version_type === version;
-    const matchesCategory = category === 'All' || jersey.category_type === category;
-
-    return matchesSearch && matchesTeam && matchesClub && matchesSale && matchesVersion && matchesCategory;
-  });
- 
-  const sorted = [...filtered];
-  if (sortByPrice === 'LowToHigh') {
-    sorted.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
-  } else if (sortByPrice === 'HighToLow') {
-    sorted.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
-  }
+  const sorted = jerseys;
  
   const loadedJerseyCount = jerseys.length;
-  const headerText = loading
+  const headerText = loading && page === 1
     ? 'Loading jerseys...'
     : total !== null
-      ? `Showing ${loadedJerseyCount} of ${total} total jerseys`
+      ? `Showing ${loadedJerseyCount} of ${total} Jerseys`
       : `${loadedJerseyCount} jerseys available`;
  
   return (
@@ -217,7 +217,7 @@ export default function CatalogPage() {
             >
               <option value="All">All Versions</option>
               <option value="PLAYER">Player Version</option>
-              <option value="FAN">Fan Version</option>
+              <option value="FAN">Master Version</option>
             </select>
           </div>
 
@@ -253,14 +253,14 @@ export default function CatalogPage() {
         </h2>
         {total !== null ? (
           <p className="text-sm text-charcoal/60 font-sans">
-            Loaded {loadedJerseyCount} of {total} total jerseys
+            Showing {loadedJerseyCount} of {total} Jerseys
           </p>
         ) : null}
       </div>
  
       {error && <p className="bg-red-50 text-red-600 p-4 rounded-none border border-red-150 font-sans text-sm">{error}</p>}
  
-      {!loading && !error && filtered.length === 0 && (
+      {!loading && !error && sorted.length === 0 && (
         <div className="text-center py-20 bg-white rounded-none border border-charcoal/10 shadow-none">
           <h3 className="font-heading text-xl font-bold uppercase tracking-wider text-charcoal mb-2">No matches found</h3>
           <p className="text-sm text-charcoal/50 mb-6 font-sans">Try adjusting your search or filters.</p>
@@ -276,14 +276,15 @@ export default function CatalogPage() {
         ))}
       </div>
 
-      {hasMore && !loading && (
+      {hasMore && (
         <div className="mt-8 text-center">
           <button
             type="button"
             onClick={() => setPage((current) => current + 1)}
             className="btn-primary px-6 py-3"
+            disabled={loading}
           >
-            Load more jerseys
+            {loading ? 'Loading...' : 'Load More'}
           </button>
         </div>
       )}

@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingBag, Search, Menu, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import BrandLogo from './BrandLogo';
+import MobileDrawer from './MobileDrawer';
+
+const navLinks = [
+  { label: 'Home', path: '/' },
+  { label: 'Catalog', path: '/jerseys' },
+  { label: 'International Jerseys', path: '/jerseys?category=INTERNATIONAL' },
+  { label: 'Club Jerseys', path: '/jerseys?category=CLUB' },
+  { label: 'Jerseys With Shorts', path: '/jerseys?category=SHORTS' },
+  { label: 'Other Sports & Merchandise', path: '/jerseys?category=OTHER' },
+  { label: 'Player Version', path: '/jerseys?version=PLAYER' },
+  { label: 'Master Version', path: '/jerseys?version=FAN' },
+  { label: 'Clearance Sale', path: '/jerseys?is_on_sale=Yes' },
+];
 
 export default function Navbar() {
   const { toggleCart, totalItems } = useCart();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSearchSubmit = (e) => {
     if (e) e.preventDefault();
@@ -18,6 +32,26 @@ export default function Navbar() {
       setIsSearchOpen(false);
       setSearchQuery('');
     }
+  };
+
+  const isActiveLink = (path) => {
+    const [pathname, search] = path.split('?');
+    if (location.pathname !== pathname) return false;
+    
+    if (!search) {
+      if (pathname === '/jerseys') {
+        return location.search === '' || location.search === '?';
+      }
+      return true;
+    }
+
+    const searchParams = new URLSearchParams(search);
+    const currentParams = new URLSearchParams(location.search);
+
+    for (const [key, value] of searchParams.entries()) {
+      if (currentParams.get(key) !== value) return false;
+    }
+    return true;
   };
 
   return (
@@ -48,21 +82,30 @@ export default function Navbar() {
       ) : (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            <div className="flex-shrink-0 flex items-center">
+            <div className="flex-shrink-0 flex items-center mr-4">
               <Link to="/">
                 <BrandLogo />
               </Link>
             </div>
 
-            <nav className="hidden md:flex space-x-8">
-              <Link to="/" className="font-heading text-lg uppercase tracking-wider text-charcoal font-semibold relative group py-2">
-                Home
-                <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-charcoal transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link to="/jerseys" className="font-heading text-lg uppercase tracking-wider text-charcoal/70 hover:text-charcoal font-semibold relative group py-2">
-                Catalog
-                <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-charcoal transition-all duration-300 group-hover:w-full"></span>
-              </Link>
+            <nav className="hidden lg:flex items-center flex-wrap gap-x-4 xl:gap-x-6 gap-y-1 max-w-[75%]">
+              {navLinks.map((link) => {
+                const active = isActiveLink(link.path);
+                return (
+                  <Link
+                    key={link.label}
+                    to={link.path}
+                    className={`font-heading text-[10px] xl:text-[11px] uppercase tracking-wider font-extrabold relative py-1 transition-colors ${
+                      active ? 'text-charcoal' : 'text-charcoal/65 hover:text-charcoal'
+                    }`}
+                  >
+                    {link.label}
+                    {active && (
+                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-charcoal"></span>
+                    )}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="flex items-center space-x-4">
@@ -77,32 +120,14 @@ export default function Navbar() {
                   </span>
                 )}
               </button>
-              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-charcoal/70 hover:text-charcoal transition-colors">
-                {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              <button onClick={() => setIsDrawerOpen(true)} className="lg:hidden text-charcoal/70 hover:text-charcoal transition-colors" aria-label="Open menu">
+                <Menu size={22} />
               </button>
             </div>
           </div>
         </div>
       )}
-      {/* Mobile navigation menu */}
-      {mobileMenuOpen && (
-        <nav className="md:hidden bg-cream border-b border-charcoal/10 px-4 pt-2 pb-4 space-y-2">
-          <Link 
-            to="/" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="block font-heading text-lg uppercase tracking-wider text-charcoal font-semibold py-2 transition-colors border-b border-charcoal/5"
-          >
-            Home
-          </Link>
-          <Link 
-            to="/jerseys" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="block font-heading text-lg uppercase tracking-wider text-charcoal/70 hover:text-charcoal font-semibold py-2 transition-colors border-b border-charcoal/5"
-          >
-            Catalog
-          </Link>
-        </nav>
-      )}
+      <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
     </header>
   );
 }

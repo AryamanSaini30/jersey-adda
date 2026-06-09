@@ -44,6 +44,7 @@ async function listJerseys(query) {
   const sortOrder = query.sort_order || 'desc';
   const page = query.page || 1;
   const limit = query.limit || 12;
+  const offset = query.offset;
 
   const filters = {
     search: normalizeOptionalString(query.search),
@@ -64,7 +65,8 @@ async function listJerseys(query) {
     sortBy,
     sortOrder,
     page,
-    limit
+    limit,
+    offset
   });
 }
 

@@ -46,7 +46,7 @@ async function attachImagesToItems(items) {
   return (items || []).map((item) => attachImages(item, imagesByJerseyId));
 }
 
-async function list({ filters, sortBy, sortOrder, page, limit }) {
+async function list({ filters, sortBy, sortOrder, page, limit, offset }) {
   let query = supabase.from('jerseys').select('*', { count: 'exact' });
 
   if (filters.search) {
@@ -98,22 +98,30 @@ async function list({ filters, sortBy, sortOrder, page, limit }) {
 
   query = query.order(sortBy, { ascending: sortOrder === 'asc' });
 
-  const offset = (page - 1) * limit;
-  const { data, error, count } = await query.range(offset, offset + limit - 1);
+  const calculatedOffset = offset !== undefined && offset !== null ? offset : (page - 1) * limit;
+  const { data, error, count } = await query.range(calculatedOffset, calculatedOffset + limit - 1);
 
   if (error) {
     throw error;
   }
 
   const items = await attachImagesToItems(data || []);
+  const totalCount = count || 0;
+  const currentPage = page || Math.floor(calculatedOffset / limit) + 1;
+  const hasMore = calculatedOffset + items.length < totalCount;
 
   return {
+    products: items,
     items,
+    totalCount,
+    page: currentPage,
+    limit,
+    hasMore,
     pagination: {
-      page,
+      page: currentPage,
       limit,
-      total: count || 0,
-      total_pages: Math.ceil((count || 0) / limit)
+      total: totalCount,
+      total_pages: Math.ceil(totalCount / limit)
     }
   };
 }
