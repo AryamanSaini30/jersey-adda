@@ -10,7 +10,8 @@ const envSchema = z.object({
   CLOUDINARY_API_KEY: z.string().min(1),
   CLOUDINARY_API_SECRET: z.string().min(1),
   ADMIN_PASSWORD: z.string().min(1),
-  JWT_SECRET: z.string().min(8)
+  JWT_SECRET: z.string().min(8),
+  FRONTEND_URL: z.string().url().default('http://localhost:5173')
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -29,7 +30,8 @@ const env = {
   cloudinaryApiKey: parsed.data.CLOUDINARY_API_KEY,
   cloudinaryApiSecret: parsed.data.CLOUDINARY_API_SECRET,
   adminPassword: parsed.data.ADMIN_PASSWORD,
-  jwtSecret: parsed.data.JWT_SECRET
+  jwtSecret: parsed.data.JWT_SECRET,
+  frontendUrl: parsed.data.FRONTEND_URL
 };
 
 module.exports = { env };

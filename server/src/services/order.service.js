@@ -1,5 +1,6 @@
 const Order = require('../models/order.model');
 const Settings = require('../models/settings.model');
+const { env } = require('../config/env');
 
 const defaultWhatsAppTemplate = `DETAILS
 ORDER NO:- {{order_number}}
@@ -43,6 +44,19 @@ const createOrder = async (orderPayload) => {
   return { order: newOrder, whatsappUrl };
 };
 
+const getImageUrl = (item) => {
+  if (item.image_url_1) return item.image_url_1;
+  if (Array.isArray(item.images) && item.images.length > 0) {
+    return item.images[0].url || item.images[0];
+  }
+  if (Array.isArray(item.jersey_images) && item.jersey_images.length > 0) {
+    return item.jersey_images[0].url || item.jersey_images[0];
+  }
+  if (item.image_url) return item.image_url;
+  if (item.cover_image_url) return item.cover_image_url;
+  return '';
+};
+
 const generateWhatsAppMessage = (order, customer, settings) => {
   const items = order.items
     .map(
@@ -50,6 +64,22 @@ const generateWhatsAppMessage = (order, customer, settings) => {
         `- ${item.jersey_name} (${item.size}) x ${item.quantity} - Price: ₹${Number(item.price).toLocaleString('en-IN')}`
     )
     .join('\n');
+
+  const itemsWithImages = order.items
+    .map((item, index) => {
+      const imageUrl = getImageUrl(item);
+      return `${index + 1}.\n\n${item.jersey_name}\n\nSize: ${item.size}\n\nQuantity: ${item.quantity}\n\nPrice: ₹${Number(item.price)}\n\nImage:\n${imageUrl || 'N/A'}`;
+    })
+    .join('\n\n---\n\n') + (order.items.length > 0 ? '\n\n---\n\n' : '');
+
+  const itemsWithLinks = order.items
+    .map((item, index) => {
+      const slug = item.slug || '';
+      const imageUrl = getImageUrl(item);
+      const productUrl = slug ? `${env.frontendUrl}/product/${slug}` : '';
+      return `${index + 1}.\n\n${item.jersey_name}\n\nSize: ${item.size}\n\nQuantity: ${item.quantity}\n\nPrice: ₹${Number(item.price)}\n\nProduct:\n${productUrl || 'N/A'}\n\nImage:\n${imageUrl || 'N/A'}`;
+    })
+    .join('\n\n---\n\n') + (order.items.length > 0 ? '\n\n---\n\n' : '');
 
   const total = `₹${Number(order.total_amount).toLocaleString('en-IN')}`;
   const customerAddress = `${customer.address_line_1}${customer.address_line_2 ? '\n' + customer.address_line_2 : ''}\n${customer.city}, ${customer.state} - ${customer.postal_code}`;
@@ -63,6 +93,8 @@ const generateWhatsAppMessage = (order, customer, settings) => {
     customer_address: customerAddress,
     postal_code: customer.postal_code,
     order_items: items,
+    order_items_with_images: itemsWithImages,
+    order_items_with_links: itemsWithLinks,
     total_amount: total,
     order_date: orderDate,
   });

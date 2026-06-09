@@ -29,7 +29,18 @@ const Order = {
       throw new Error(itemsError.message);
     }
 
-    return { ...order, items: orderItems };
+    return {
+      ...order,
+      items: orderItems.map((oi, idx) => ({
+        ...oi,
+        slug: items[idx].slug,
+        image_url_1: items[idx].image_url_1,
+        images: items[idx].images,
+        jersey_images: items[idx].jersey_images,
+        image_url: items[idx].image_url,
+        cover_image_url: items[idx].cover_image_url
+      }))
+    };
   },
 
   async getOrderById(id) {

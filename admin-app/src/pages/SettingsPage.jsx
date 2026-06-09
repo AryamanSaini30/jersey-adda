@@ -96,6 +96,8 @@ DATE:- {{order_date}}`;
     customer_address: '123 Main Road, Flat 4B, Indiranagar, Bangalore, Karnataka - 560038',
     postal_code: '560048',
     order_items: '- Real Madrid 24/25 Jersey (M) x 1 - Price: ₹1,500\n- Arsenal 24/25 Home Jersey (L) x 2 - Price: ₹3,000',
+    order_items_with_images: `1.\n\nReal Madrid 24/25 Jersey\n\nSize: M\n\nQuantity: 1\n\nPrice: ₹1500\n\nImage:\nhttps://jerseyadda.in/images/real-madrid.jpg\n\n---\n\n2.\n\nArsenal 24/25 Home Jersey\n\nSize: L\n\nQuantity: 2\n\nPrice: ₹1500\n\nImage:\nhttps://jerseyadda.in/images/arsenal.jpg\n\n---\n`,
+    order_items_with_links: `1.\n\nReal Madrid 24/25 Jersey\n\nSize: M\n\nQuantity: 1\n\nPrice: ₹1500\n\nProduct:\nhttps://jerseyadda.in/product/real-madrid-24-25\n\nImage:\nhttps://jerseyadda.in/images/real-madrid.jpg\n\n---\n\n2.\n\nArsenal 24/25 Home Jersey\n\nSize: L\n\nQuantity: 2\n\nPrice: ₹1500\n\nProduct:\nhttps://jerseyadda.in/product/arsenal-24-25-home\n\nImage:\nhttps://jerseyadda.in/images/arsenal.jpg\n\n---\n`,
     total_amount: '4,500',
     order_date: new Date().toLocaleDateString('en-IN')
   };
@@ -107,6 +109,8 @@ DATE:- {{order_date}}`;
       .replace(/\{\{customer_name\}\}/g, sampleData.customer_name)
       .replace(/\{\{customer_phone\}\}/g, sampleData.customer_phone)
       .replace(/\{\{customer_address\}\}/g, sampleData.customer_address)
+      .replace(/\{\{order_items_with_images\}\}/g, sampleData.order_items_with_images)
+      .replace(/\{\{order_items_with_links\}\}/g, sampleData.order_items_with_links)
       .replace(/\{\{order_items\}\}/g, sampleData.order_items)
       .replace(/\{\{total_amount\}\}/g, sampleData.total_amount)
       .replace(/\{\{postal_code\}\}/g, sampleData.postal_code)
@@ -225,7 +229,7 @@ DATE:- {{order_date}}`;
                 <div style={{ marginTop: '8px', fontSize: '0.8rem', color: 'var(--muted)' }}>
                   <span style={{ fontWeight: 'bold', color: 'var(--text)' }}>Available Placeholders:</span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
-                    {['{{order_number}}', '{{customer_name}}', '{{customer_phone}}', '{{customer_address}}', '{{postal_code}}', '{{order_items}}', '{{total_amount}}', '{{order_date}}'].map(ph => (
+                    {['{{order_number}}', '{{customer_name}}', '{{customer_phone}}', '{{customer_address}}', '{{postal_code}}', '{{order_items}}', '{{order_items_with_images}}', '{{order_items_with_links}}', '{{total_amount}}', '{{order_date}}'].map(ph => (
                       <code key={ph} style={{ background: '#111827', padding: '6px 10px', color: '#f8fafc', border: '1px solid rgba(255,255,255,0.08)', fontSize: '0.75rem', borderRadius: '6px' }}>{ph}</code>
                     ))}
                   </div>
