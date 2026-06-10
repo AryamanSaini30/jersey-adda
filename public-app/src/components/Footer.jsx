@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle } from 'lucide-react';
-import { Instagram } from 'lucide-react';
+import { MessageCircle, Link2 } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 import { http } from '../api/http';
 
@@ -61,7 +60,7 @@ export default function Footer() {
                 className="inline-flex items-center gap-2 bg-[#E1306C] hover:bg-[#c42a60] text-white px-6 py-3 rounded-none font-bold uppercase tracking-wider transition-all duration-300 shadow-md hover:scale-[1.01]"
                 aria-label="Instagram - Jersey Adda"
               >
-                <Instagram className="w-5 h-5" />
+                <Link2 className="w-5 h-5" />
                 Jersey Adda
               </a>
             </div>
