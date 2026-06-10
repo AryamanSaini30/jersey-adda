@@ -61,7 +61,7 @@ export default function Footer() {
                 aria-label="Instagram - Jersey Adda"
               >
                 <Link2 className="w-5 h-5" />
-                Jersey Adda
+                Jersey Adda Instagram
               </a>
             </div>
           </div>
