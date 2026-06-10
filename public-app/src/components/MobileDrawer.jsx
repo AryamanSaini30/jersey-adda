@@ -142,7 +142,7 @@ export default function MobileDrawer({ isOpen, onClose }) {
               onClick={onClose}
               className={linkClass('/jerseys?version=FAN')}
             >
-              Master Version
+              Stadium Version
             </Link>
             <Link
               to="/jerseys?is_on_sale=Yes"

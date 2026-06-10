@@ -13,8 +13,8 @@ const collections = [
     color: 'from-charcoal/95 via-charcoal/65 to-transparent'
   },
   {
-    id: 'master-version',
-    title: 'Master Version',
+    id: 'stadium-version',
+    title: 'Stadium Version',
     subtitle: 'Comfortable fan-fit jerseys designed for everyday wear.',
     image: 'https://res.cloudinary.com/dlnf5iam6/image/upload/v1781001004/22_e8hjqj.jpg',
     path: '/jerseys?version=FAN',

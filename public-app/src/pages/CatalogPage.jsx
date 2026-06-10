@@ -217,7 +217,7 @@ export default function CatalogPage() {
             >
               <option value="All">All Versions</option>
               <option value="PLAYER">Player Version</option>
-              <option value="FAN">Master Version</option>
+              <option value="FAN">Stadium Version</option>
             </select>
           </div>
 

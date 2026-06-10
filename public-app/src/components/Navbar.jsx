@@ -13,7 +13,7 @@ const navLinks = [
   { label: 'Jerseys With Shorts', path: '/jerseys?category=SHORTS' },
   { label: 'Other Sports & Merchandise', path: '/jerseys?category=OTHER' },
   { label: 'Player Version', path: '/jerseys?version=PLAYER' },
-  { label: 'Master Version', path: '/jerseys?version=FAN' },
+  { label: 'Stadium Version', path: '/jerseys?version=FAN' },
   { label: 'Clearance Sale', path: '/jerseys?is_on_sale=Yes' },
 ];
 
