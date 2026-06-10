@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { ArrowLeft, CheckCircle, Search, User, MapPin, ClipboardList } from 'lucide-react';
 
 const CheckoutPage = () => {
-  const { cart, cartTotal, clearCart } = useCart();
+  const { cart, cartTotal, clearCart, itemsTotal, deliveryCost } = useCart();
   const navigate = useNavigate();
   const [phone, setPhone] = useState('');
   const [customer, setCustomer] = useState(null);
@@ -364,11 +364,11 @@ const CheckoutPage = () => {
           <div className="border-t border-charcoal/10 pt-6 mt-6 space-y-4">
             <div className="flex justify-between text-xs font-heading font-bold uppercase tracking-widest text-charcoal/50">
               <span>Subtotal</span>
-              <span className="text-charcoal">{formatCurrency(cartTotal)}</span>
+              <span className="text-charcoal">{formatCurrency(itemsTotal)}</span>
             </div>
             <div className="flex justify-between text-xs font-heading font-bold uppercase tracking-widest text-charcoal/50">
               <span>Delivery</span>
-              <span className="text-charcoal bg-accent px-2 py-0.5 border border-charcoal/10 text-[9px] font-black tracking-wider">Will be specified on WhatsApp</span>
+              <span className="text-charcoal bg-accent px-2 py-0.5 border border-charcoal/10 text-[9px] font-black tracking-wider">{formatCurrency(deliveryCost)}</span>
             </div>
             <div className="border-t border-charcoal/10 pt-4 mt-4 flex justify-between items-baseline">
               <span className="font-heading text-sm font-bold uppercase tracking-wider text-charcoal">Total Amount</span>

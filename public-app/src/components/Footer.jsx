@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 import { http } from '../api/http';
 
@@ -42,15 +43,28 @@ export default function Footer() {
             <span className="font-heading text-lg uppercase tracking-wider text-gray-200">
               Phone: {whatsappNumber}
             </span>
-            <a 
-              href={whatsappUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-8 py-4 rounded-none font-bold uppercase tracking-wider transition-all duration-300 shadow-md hover:scale-[1.01]"
-            >
-              <MessageCircle className="w-5 h-5" />
-              Order via WhatsApp
-            </a>
+            <div className="flex gap-3">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-6 py-3 rounded-none font-bold uppercase tracking-wider transition-all duration-300 shadow-md hover:scale-[1.01]"
+              >
+                <MessageCircle className="w-5 h-5" />
+                Order via WhatsApp
+              </a>
+
+              <a
+                href="https://www.instagram.com/jerseyadda.store/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#E1306C] hover:bg-[#c42a60] text-white px-6 py-3 rounded-none font-bold uppercase tracking-wider transition-all duration-300 shadow-md hover:scale-[1.01]"
+                aria-label="Instagram - Jersey Adda"
+              >
+                <Instagram className="w-5 h-5" />
+                Jersey Adda
+              </a>
+            </div>
           </div>
         </div>
 

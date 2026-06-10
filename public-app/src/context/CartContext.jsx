@@ -70,10 +70,9 @@ export const CartProvider = ({ children }) => {
     setIsCartOpen((prev) => !prev);
   };
 
-  const cartTotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const ITEMS_TOTAL = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const DELIVERY_COST = 99; // fixed delivery charge in INR
+  const cartTotal = ITEMS_TOTAL + (cart.length > 0 ? DELIVERY_COST : 0);
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
 
   const value = {
@@ -85,6 +84,8 @@ export const CartProvider = ({ children }) => {
     isCartOpen,
     toggleCart,
     cartTotal,
+    itemsTotal: ITEMS_TOTAL,
+    deliveryCost: cart.length > 0 ? DELIVERY_COST : 0,
     totalItems,
   };
 

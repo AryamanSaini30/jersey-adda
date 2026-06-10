@@ -6,7 +6,7 @@ import { getPrimaryJerseyImage } from '../utils/image';
 import { Trash2, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 const CartPage = () => {
-  const { cart, cartTotal, totalItems, removeFromCart, updateQuantity } = useCart();
+  const { cart, cartTotal, totalItems, removeFromCart, updateQuantity, deliveryCost } = useCart();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -99,7 +99,7 @@ const CartPage = () => {
               </div>
               <div className="flex justify-between text-xs font-heading font-bold uppercase tracking-widest text-charcoal/50">
                 <span>Delivery</span>
-                <span className="text-charcoal bg-accent px-2.5 py-1 text-[10px] tracking-wider border border-charcoal/10 font-black">Will be specified on WhatsApp</span>
+                <span className="text-charcoal bg-accent px-2.5 py-1 text-[10px] tracking-wider border border-charcoal/10 font-black">{formatCurrency(deliveryCost)}</span>
               </div>
               <div className="border-t border-charcoal/10 pt-4 mt-4 flex justify-between items-baseline">
                 <span className="font-heading text-sm font-bold uppercase tracking-wider text-charcoal">Total Amount</span>
