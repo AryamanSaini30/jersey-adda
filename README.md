@@ -1,4 +1,4 @@
-# Jersey Adda
+# Jersey Adda Site
 
 This repo now has a split frontend setup:
 
