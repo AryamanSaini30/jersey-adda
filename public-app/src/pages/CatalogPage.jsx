@@ -36,19 +36,27 @@ export default function CatalogPage() {
 
   const filterKey = `${search}-${team}-${club}-${isOnSale}-${category}-${version}-${sortByPrice}`;
 
-  // Reset page when any filter changes
-  useEffect(() => {
-    setPage(1);
-  }, [filterKey]);
+  // Track previous filter key to detect filter changes and prevent double-fetching
+  const prevFilterKeyRef = React.useRef(filterKey);
 
   useEffect(() => {
     let active = true;
+
+    // Reset page to 1 on filter changes and abort current fetch to prevent double fetch
+    if (prevFilterKeyRef.current !== filterKey) {
+      prevFilterKeyRef.current = filterKey;
+      if (page !== 1) {
+        setPage(1);
+        return;
+      }
+    }
+
     async function fetchJerseys() {
       setLoading(true);
       setError('');
 
       const params = new URLSearchParams();
-      params.set('limit', '24'); // Load 24 jerseys per page (Phase 1 Catalog Optimization)
+      params.set('limit', '20'); // Load 20 jerseys per page (Catalog Optimization)
       params.set('page', String(page));
       if (search) params.set('search', search);
       if (team !== 'All') params.set('team', team);

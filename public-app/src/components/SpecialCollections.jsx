@@ -1,4 +1,5 @@
 import React from 'react';
+import { optimizeCloudinaryUrl } from '../utils/image';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
@@ -54,7 +55,7 @@ export default function SpecialCollections() {
             >
               {/* Background Image - refactored to img tag for native lazy loading */}
               <img 
-                src={col.image} 
+                src={optimizeCloudinaryUrl(col.image, 400)} 
                 alt={col.title}
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" 

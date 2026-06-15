@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { getJerseyImages } from '../utils/image';
+import { getJerseyImages, optimizeCloudinaryUrl } from '../utils/image';
 import { formatCurrency } from '../utils/currency';
 import toast from 'react-hot-toast';
 
@@ -44,7 +44,7 @@ const JerseyCard = React.memo(function JerseyCard({ jersey }) {
             return (
               <img
                 key={imgUrl}
-                src={imgUrl}
+                src={optimizeCloudinaryUrl(imgUrl, 300)}
                 alt={jersey.name}
                 loading="lazy"
                 className={`absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-all duration-700 ease-in-out ${

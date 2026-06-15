@@ -1,4 +1,5 @@
 import React from 'react';
+import { optimizeCloudinaryUrl } from '../utils/image';
 import { Link } from 'react-router-dom';
 
 const clubs = [
@@ -52,7 +53,7 @@ export default function FeaturedClubs() {
             >
               {/* Background Image - refactored to img tag for native lazy loading */}
               <img 
-                src={club.bgImage} 
+                src={optimizeCloudinaryUrl(club.bgImage, 300)} 
                 alt={club.name}
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 

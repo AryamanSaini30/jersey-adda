@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { optimizeCloudinaryUrl } from '../utils/image';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -28,6 +29,11 @@ const slides = [
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [hasBeenActive, setHasBeenActive] = useState({ 0: true });
+
+  useEffect(() => {
+    setHasBeenActive((prev) => (prev[currentSlide] ? prev : { ...prev, [currentSlide]: true }));
+  }, [currentSlide]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,18 +67,20 @@ export default function HeroSection() {
             }`}
           >
             {/* Background Image - Clean & Sharp */}
-            <div className="absolute inset-0">
-              <img 
-                src={slide.image} 
-                alt={slide.title} 
-                loading={isActive ? "eager" : "lazy"}
-                className={`w-full h-full object-cover object-center opacity-100 transition-transform duration-[6000ms] ease-out ${
-                  isActive ? 'scale-100' : 'scale-105'
-                }`}
-              />
-              {/* Dark overlay for a premium dark theme feel */}
-              <div className="absolute inset-0 bg-black/40" />
-            </div>
+            {hasBeenActive[index] && (
+              <div className="absolute inset-0">
+                <img 
+                  src={optimizeCloudinaryUrl(slide.image, 1200)} 
+                  alt={slide.title} 
+                  loading={index === 0 ? "eager" : "lazy"}
+                  className={`w-full h-full object-cover object-center opacity-100 transition-transform duration-[6000ms] ease-out ${
+                    isActive ? 'scale-100' : 'scale-105'
+                  }`}
+                />
+                {/* Dark overlay for a premium dark theme feel */}
+                <div className="absolute inset-0 bg-black/40" />
+              </div>
+            )}
           </div>
         );
       })}

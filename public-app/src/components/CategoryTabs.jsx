@@ -1,4 +1,5 @@
 import React from 'react';
+import { optimizeCloudinaryUrl } from '../utils/image';
 
 const tabs = [
   {
@@ -54,7 +55,7 @@ export default function CategoryTabs({ activeCategory, setActiveCategory }) {
               >
                 {/* Background Image - refactored to img tag for native lazy loading */}
                 <img 
-                  src={tab.bgImage} 
+                  src={optimizeCloudinaryUrl(tab.bgImage, 300)} 
                   alt={tab.label}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
