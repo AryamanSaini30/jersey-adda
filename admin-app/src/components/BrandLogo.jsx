@@ -1,5 +1,5 @@
 export default function BrandLogo({ className = '', showWordmark = true }) {
-  const logoUrl = 'https://res.cloudinary.com/dlnf5iam6/image/upload/v1780690665/WhatsApp_Image_2026-06-06_at_01.36.22_pvwztm.jpg';
+  const logoUrl = 'https://res.cloudinary.com/dalnbaeaz/image/upload/v1780690665/WhatsApp_Image_2026-06-06_at_01.36.22_pvwztm.jpg';
 
   return (
     <div className={`brand ${className}`.trim()}>
@@ -7,6 +7,7 @@ export default function BrandLogo({ className = '', showWordmark = true }) {
         <img
           src={logoUrl}
           alt="Jersey Adda logo"
+          loading="eager"
         />
       </div>
       {showWordmark ? (

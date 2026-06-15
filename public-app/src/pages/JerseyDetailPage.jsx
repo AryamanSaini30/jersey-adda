@@ -21,7 +21,7 @@ export default function JerseyDetailPage() {
   const { addToCart } = useCart();
   const [whatsappNumber, setWhatsappNumber] = useState("+1234567890"); // Default fallback
 
-  const images = getJerseyImages(jersey);
+  const images = useMemo(() => getJerseyImages(jersey), [jersey]);
   const sizes = useMemo(() => {
     const normalized = normalizeSizes(jersey?.available_sizes);
     return normalized.length > 0 ? normalized : defaultJerseySizes;
@@ -149,7 +149,7 @@ export default function JerseyDetailPage() {
                     activeImage === index ? 'border-charcoal ring-1 ring-charcoal' : 'border-charcoal/10 hover:border-charcoal/40'
                   }`}
                 >
-                  <img src={image} alt={`Thumbnail ${index + 1}`} className="object-cover w-full h-full" />
+                  <img src={image} alt={`Thumbnail ${index + 1}`} loading="lazy" className="object-cover w-full h-full" />
                 </button>
               ))}
             </div>
@@ -159,6 +159,7 @@ export default function JerseyDetailPage() {
               <img 
                 src={images[activeImage]} 
                 alt={jersey.name} 
+                loading="eager"
                 className="w-full h-full object-cover object-center transition-all duration-500 ease-in-out"
               />
               

@@ -5,21 +5,21 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 const slides = [
   {
     id: 1,
-    image: "https://res.cloudinary.com/dlnf5iam6/image/upload/v1780703328/11_jqdh47.jpg",
+    image: "https://res.cloudinary.com/dalnbaeaz/image/upload/v1780703328/11_jqdh47.jpg",
     title: "Vibrant Matchday Jerseys",
     subtitle: "Experience the game with premium-quality fan and player version kits.",
     tag: "New Season Collection",
   },
   {
     id: 2,
-    image: "https://res.cloudinary.com/dlnf5iam6/image/upload/v1780703329/22_jo23lw.jpg",
+    image: "https://res.cloudinary.com/dalnbaeaz/image/upload/v1780703329/22_jo23lw.jpg",
     title: "Pride of Your Nation",
     subtitle: "Show your pride with top national kits including Argentina, Brazil, and Spain.",
     tag: "National Teams",
   },
   {
     id: 3,
-    image: "https://res.cloudinary.com/dlnf5iam6/image/upload/v1780703335/33_ysxeqe.jpg",
+    image: "https://res.cloudinary.com/dalnbaeaz/image/upload/v1780703335/33_ysxeqe.jpg",
     title: "Elite Club Jerseys",
     subtitle: "Wear the colors of the world's most prestigious clubs: Real Madrid, FC Barcelona, AC Milan, and Manchester United.",
     tag: "Club Collections",
@@ -65,6 +65,7 @@ export default function HeroSection() {
               <img 
                 src={slide.image} 
                 alt={slide.title} 
+                loading={isActive ? "eager" : "lazy"}
                 className={`w-full h-full object-cover object-center opacity-100 transition-transform duration-[6000ms] ease-out ${
                   isActive ? 'scale-100' : 'scale-105'
                 }`}
