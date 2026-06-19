@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 
 const JerseyCard = React.memo(function JerseyCard({ jersey }) {
   const { addToCart } = useCart();
-  const jerseySlug = jersey.slug || jersey.id;
+  const jerseySlug = jersey.slug || jersey.id;  
 
   const images = useMemo(() => getJerseyImages(jersey), [jersey]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
