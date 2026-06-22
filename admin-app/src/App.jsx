@@ -43,7 +43,7 @@ function App() {
   };
 
   if (isVerifying) {
-    return null; // Or a loading spinner
+    return null; // Or a loading spinner 
   }
 
   return (
